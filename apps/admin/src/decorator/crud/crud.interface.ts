@@ -39,6 +39,7 @@ export interface CrudRoutes {
 }
 export interface CrudOptions {
   routes?: CrudRoutes;
+  decorators?: any[];
 }
 
 export interface CrudOptionsWithModel extends CrudOptions {

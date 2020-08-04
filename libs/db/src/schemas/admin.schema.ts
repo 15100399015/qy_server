@@ -6,12 +6,6 @@ import { hashSync } from 'bcryptjs';
 // 管理员表
 @Schema()
 export class Admin extends Document {
-  @ApiProperty({ description: '管理员id' })
-  @Prop({
-    type: Number,
-    required: true,
-  })
-  admin_id: number;
   @ApiProperty({ description: '管理员账号' })
   @Prop({
     type: String,

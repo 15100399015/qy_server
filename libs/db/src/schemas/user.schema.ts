@@ -5,13 +5,6 @@ import { ApiProperty } from '@nestjs/swagger';
 // 用户表
 @Schema()
 export class User extends Document {
-  @ApiProperty({ description: '用户唯一id' })
-  @Prop({
-    type: Number,
-    index: true,
-    required: true,
-  })
-  user_id: number;
   @ApiProperty({ description: '用户组信息' })
   @Prop({
     type: {

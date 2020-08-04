@@ -12,30 +12,14 @@
     "baseUrl": "./",
     "incremental": true,
     "paths": {
-      "@admin": [
-        "apps/admin/src"
-      ],
-      "@server": [
-        "apps/server/src"
-      ],
-      "@libs/db": [
-        "libs/db/src"
-      ],
-      "@libs/db/*": [
-        "libs/db/src/*"
-      ],
-      "@libs/config": [
-        "libs/config/src"
-      ],
-      "@libs/config/*": [
-        "libs/config/src/*"
-      ],
-      "@libs/common": [
-        "libs/common/src"
-      ],
-      "@libs/common/*": [
-        "libs/common/src/*"
-      ]
+      "@admin/*": ["apps/admin/src/*"],
+      "@server/*": ["apps/server/src/*"],
+      "@libs/db": ["libs/db/src"],
+      "@libs/db/*": ["libs/db/src/*"],
+      "@libs/config": ["libs/config/src"],
+      "@libs/config/*": ["libs/config/src/*"],
+      "@libs/common": ["libs/common/src"],
+      "@libs/common/*": ["libs/common/src/*"]
     }
   }
 }

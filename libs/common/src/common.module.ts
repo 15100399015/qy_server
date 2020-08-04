@@ -1,9 +1,19 @@
-import { Module } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
 import { DbModule } from '@libs/db';
 import { ConfigModule } from '@libs/config';
+import { JwtModule } from '@nestjs/jwt';
 
+@Global()
 @Module({
-  imports: [DbModule, ConfigModule],
-  exports: [DbModule, ConfigModule],
+  imports: [
+    ConfigModule,
+    DbModule,
+    JwtModule.registerAsync({
+      useFactory: () => ({
+        secret: process.env.SECRET,
+      }),
+    }),
+  ],
+  exports: [DbModule, ConfigModule, JwtModule],
 })
 export class CommonModule {}

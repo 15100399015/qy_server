@@ -1,9 +1,7 @@
 import { SettingController } from './setting.controller';
-import { Module, forwardRef } from '@nestjs/common';
-import { AppModule } from '../../app.module';
+import { Module } from '@nestjs/common';
 
 @Module({
-  imports: [forwardRef(() => AppModule)],
   controllers: [SettingController],
 })
 export class SettingModule {}

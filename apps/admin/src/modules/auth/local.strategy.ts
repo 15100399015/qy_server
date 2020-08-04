@@ -7,7 +7,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { compareSync } from 'bcryptjs';
 
 @Injectable()
-export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
+export class LocalStrategy extends PassportStrategy(Strategy, 'local-admin') {
   constructor(@InjectModel(Admin.name) private readonly model: Model<Admin>) {
     super();
   }
@@ -18,7 +18,6 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
       })
       .select('+admin_pwd')
       .exec();
-    console.log(user);
     if (!user) {
       throw new BadRequestException('用户不存在');
     }
