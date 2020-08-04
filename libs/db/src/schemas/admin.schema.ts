@@ -22,6 +22,7 @@ export class Admin extends Document {
   @Prop({
     type: String,
     required: true,
+    select: false,
     get(val) {
       return val;
     },

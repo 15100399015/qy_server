@@ -5,7 +5,6 @@ import * as Joi from '@hapi/joi';
 @Module({
   imports: [
     _ConfigModule.forRoot({
-      // 验证
       validationSchema: Joi.object({
         DATABASE: Joi.string().required(),
         DATABASE_PORT: Joi.number().default(27017),

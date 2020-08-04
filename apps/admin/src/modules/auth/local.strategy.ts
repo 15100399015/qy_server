@@ -18,6 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
       })
       .select('+admin_pwd')
       .exec();
+    console.log(user);
     if (!user) {
       throw new BadRequestException('用户不存在');
     }

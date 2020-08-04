@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@libs/config';
 import { RootModel } from './modules/model/model.module';
 import { ExtraModule } from './modules/extra/extra.module';
 @Module({
   imports: [
-    ConfigModule,
     RootModel,
     ExtraModule,
     MongooseModule.forRootAsync({
@@ -22,6 +20,6 @@ import { ExtraModule } from './modules/extra/extra.module';
       }),
     }),
   ],
-  exports: [RootModel, ExtraModule, ConfigModule],
+  exports: [RootModel, ExtraModule],
 })
 export class DbModule {}
