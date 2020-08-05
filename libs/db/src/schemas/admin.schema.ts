@@ -25,22 +25,12 @@ export class Admin extends Document {
     },
   })
   admin_pwd: string;
-  @ApiProperty({ description: '随机值标识' })
-  @Prop({
-    type: String,
-  })
-  admin_random: string;
   @ApiProperty({ description: '管理员状态' })
   @Prop({
     type: Boolean,
     default: true,
   })
   admin_status: boolean;
-  @ApiProperty({ description: '授权' })
-  @Prop({
-    type: String,
-  })
-  admin_auth: string;
   @ApiProperty({ description: '登录记录' })
   @Prop({
     type: [
@@ -53,16 +43,6 @@ export class Admin extends Document {
     ],
   })
   admin_login_history: object[];
-  @ApiProperty({ description: '最后一次登录信息' })
-  @Prop({
-    type: {
-      time: Number,
-      ip: Number,
-      xy: String,
-      lat_lng: String,
-    },
-  })
-  admin_last_login: object;
 }
 
 export const AdminSchema = SchemaFactory.createForClass(Admin);

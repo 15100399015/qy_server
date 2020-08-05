@@ -13,7 +13,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-admin') {
       secretOrKey: process.env.SECRET,
     } as StrategyOptions);
   }
-  async validate(_id: string) {
-    return await this.model.findById(_id).exec();
+
+  validate(_id: string) {
+    // return await this.model.findById(_id).exec();
+    return _id;
   }
 }

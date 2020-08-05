@@ -21,6 +21,9 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local-admin') {
     if (!user) {
       throw new BadRequestException('用户不存在');
     }
+    if (!user.admin_status) {
+      throw new BadRequestException('账户被禁用');
+    }
     if (!compareSync(password, user.admin_pwd)) {
       throw new BadRequestException('密码错误');
     }

@@ -4,7 +4,7 @@ import { ApiTags, ApiBody } from '@nestjs/swagger';
 import { object } from '@hapi/joi';
 
 @ApiTags('设定')
-@Controller('Setting')
+@Controller('setting')
 export class SettingController {
   constructor(private readonly extraService: ExtraService) {}
   // 获取设置
