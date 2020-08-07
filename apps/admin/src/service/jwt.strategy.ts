@@ -14,10 +14,20 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-admin') {
     } as StrategyOptions);
   }
 
-  async validate(_id: string) {
-    const user = await this.model.findById(_id).exec();
+  async validate(data: any) {
+    // 根据id查找用户
+    const { admin_id } = data;
+    const user = await this.model
+      .findById(admin_id)
+      .select('+admin_token')
+      .exec();
+    // 如果没有找到用户
     if (!user) {
       throw new BadRequestException('token不存在');
+    }
+    // token
+    if (!user.admin_token) {
+      throw new BadRequestException('请登录');
     }
     return user;
   }

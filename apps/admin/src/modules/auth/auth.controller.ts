@@ -1,62 +1,102 @@
-import { Controller, Post, UseGuards, Req, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Req,
+  Get,
+  Put,
+  Body,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { Crud } from '@admin/decorator/crud';
-import { Admin } from '@libs/db/schemas';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
+import { AuthService } from './auth.service';
 
-@ApiTags('管理员')
-@Crud({
-  model: Admin,
-})
+@ApiTags('认证')
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly jwtService: JwtService,
-    @InjectModel(Admin.name) private readonly model: Model<Admin>,
+    private readonly authService: AuthService,
   ) {}
 
-  // 登录, 根据用户名,密码 获取 用户的 jwt token
+  // 登录
   @ApiOperation({ summary: '登录' })
   @UseGuards(AuthGuard('local-admin'))
   @Post('login')
   async login(@Req() req) {
+    // 拿到用户id
+    const _id = req.user._id;
+    // 生成token
+    const token = this.jwtService.sign({
+      admin_id: String(_id),
+    });
+    // 写入token, 表示用户已经登录
+    await this.authService.upToken(_id, token);
+    // 返回token
     return {
-      // 自定义code码
       code: 20000,
       data: {
-        token: this.jwtService.sign(
-          {
-            data: String(req.user._id),
-          },
-          {
-            expiresIn: 60 * 60,
-            issuer: '杨立鹏',
-          },
-        ),
+        token: token,
+      },
+    };
+  }
+  // 获取用户信息
+  @Get('getInfo')
+  @UseGuards(AuthGuard('jwt-admin'))
+  getInfo(@Req() req) {
+    const {
+      admin_roles,
+      admin_introduction,
+      admin_portrait,
+      admin_name,
+    } = req.user;
+    // 返回用到的用户信息
+    return {
+      code: 20000,
+      data: {
+        roles: admin_roles,
+        introduction: admin_introduction,
+        avatar: admin_portrait,
+        name: admin_name,
       },
     };
   }
 
-  @Get('getInfo')
-  @UseGuards(AuthGuard('jwt-admin'))
-  getInfo(@Req() req) {
-    return {
-      code: 20000,
-      data: {
-        roles: req.user.admin_roles,
-        introduction: req.user.admin_introduction,
-        avatar: req.user.admin_portrait,
-        name: req.user.admin_name,
-      },
-    };
-  }
   // 登出
   @Post('logout')
   @UseGuards(AuthGuard('jwt-admin'))
-  logout(@Req() req) {
+  async logout(@Req() req) {
+    const _id: string = req.user._id;
+    // 退出登录, 就是移除数据库中存放的token
+    await this.authService.removeToken(_id);
+    // 返回数据
+    return {
+      code: 20000,
+      data: 'success',
+    };
+  }
+
+  // 续签token
+  @Post('renewal')
+  @UseGuards(AuthGuard('jwt-admin'))
+  async renewal(@Req() req) {
+    const _id: string = req.user._id;
+    // 生成新的 token
+    const token = this.jwtService.sign({
+      admin_id: String(_id),
+    });
+    await this.authService.upToken(_id, token);
+    return token;
+  }
+
+  // 更改密码
+  @Put('resetPwd')
+  @UseGuards(AuthGuard('jwt-admin'))
+  async resetPwd(@Req() req, @Body() body) {
+    const _id: string = req.user._id;
+    const newPwd: string = body.newPwd;
+    await this.authService.resetPwd(_id, newPwd);
     return {
       code: 20000,
       data: 'success',

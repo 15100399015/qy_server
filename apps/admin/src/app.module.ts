@@ -1,3 +1,4 @@
+import { AdminModule } from './modules/admin/admin.module';
 import { Module } from '@nestjs/common';
 import { CommonModule } from '@libs/common';
 import { AuthModule } from './modules/auth/auth.module';
@@ -8,6 +9,7 @@ import { SettingModule } from './modules/setting/setting.module';
 import { JwtStrategy } from './service/jwt.strategy';
 @Module({
   imports: [
+    AdminModule,
     CommonModule,
     AuthModule,
     ArticleModule,
