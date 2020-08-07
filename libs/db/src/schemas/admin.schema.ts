@@ -10,6 +10,7 @@ export class Admin extends Document {
   @Prop({
     type: String,
     required: true,
+    unique: true,
   })
   admin_name: string;
   @ApiProperty({ description: '管理员密码' })
@@ -17,7 +18,7 @@ export class Admin extends Document {
     type: String,
     required: true,
     select: false,
-    get(val) {
+    get(val: string) {
       return val;
     },
     set(val: string) {
@@ -25,6 +26,22 @@ export class Admin extends Document {
     },
   })
   admin_pwd: string;
+  @ApiProperty({ description: '管理员权限' })
+  @Prop({
+    type: [String],
+    required: true,
+  })
+  admin_roles: string[];
+  @ApiProperty({ description: '管理员头像' })
+  @Prop({
+    type: String,
+  })
+  admin_portrait: string;
+  @ApiProperty({ description: '要说的话' })
+  @Prop({
+    type: String,
+  })
+  admin_introduction: string;
   @ApiProperty({ description: '管理员状态' })
   @Prop({
     type: Boolean,

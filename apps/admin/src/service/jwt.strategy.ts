@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { InjectModel } from '@nestjs/mongoose';
 import { Admin } from '@libs/db/schemas';
 import { Model } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-admin') {
@@ -14,8 +14,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-admin') {
     } as StrategyOptions);
   }
 
-  validate(_id: string) {
-    // return await this.model.findById(_id).exec();
-    return _id;
+  async validate(_id: string) {
+    const user = await this.model.findById(_id).exec();
+    if (!user) {
+      throw new BadRequestException('token不存在');
+    }
+    return user;
   }
 }

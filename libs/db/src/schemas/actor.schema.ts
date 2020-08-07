@@ -12,13 +12,6 @@ import { ApiBody, ApiProperty } from '@nestjs/swagger';
   },
 })
 export class Actor extends Document {
-  @ApiProperty({ description: '演员id' })
-  @Prop({
-    type: Number,
-    index: true,
-    required: true,
-  })
-  actor_id: number;
   @ApiProperty({ description: '演员名字' })
   @Prop({
     type: String,
