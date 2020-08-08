@@ -36,4 +36,8 @@ export class AuthService {
       })
       .exec();
   }
+  // 获取信息
+  getInfo(_id: string) {
+    return this.model.findById(_id).exec();
+  }
 }

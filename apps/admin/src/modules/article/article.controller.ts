@@ -9,7 +9,6 @@ import { AuthGuard } from '@nestjs/passport';
 @ApiTags('文章')
 @Crud({
   model: Article,
-  decorators: [UseGuards(AuthGuard('jwt-admin'))],
 })
 @Controller('article')
 export class ArticleController {

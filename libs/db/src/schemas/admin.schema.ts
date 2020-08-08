@@ -58,26 +58,13 @@ export class Admin extends Document {
   @ApiProperty({ description: '管理员邮箱' })
   @Prop({
     type: String,
-    unique: true,
   })
   admin_email: string;
   @ApiProperty({ description: '管理员手机号' })
   @Prop({
     type: Number,
-    unique: true,
   })
   admin_phone: number;
-  @ApiProperty({ description: '登录历史' })
-  @Prop({
-    type: [
-      {
-        time: Number,
-        ip: Number,
-      },
-    ],
-    default: [],
-  })
-  admin_login_history: object[];
 }
 
 export const AdminSchema = SchemaFactory.createForClass(Admin);

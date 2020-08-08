@@ -2,11 +2,12 @@ import { AdminModule } from './modules/admin/admin.module';
 import { Module } from '@nestjs/common';
 import { CommonModule } from '@libs/common';
 import { AuthModule } from './modules/auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
 import { ArticleModule } from './modules/article/article.module';
 import { VodModule } from './modules/vod/vod.module';
 import { UserModule } from './modules/user/user.module';
 import { SettingModule } from './modules/setting/setting.module';
-import { JwtStrategy } from './service/jwt.strategy';
+import { RolesGuard } from './guard/roles.guard';
 @Module({
   imports: [
     AdminModule,
@@ -17,6 +18,11 @@ import { JwtStrategy } from './service/jwt.strategy';
     SettingModule,
     UserModule,
   ],
-  providers: [JwtStrategy],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}

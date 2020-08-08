@@ -19,7 +19,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local-admin') {
       .select('+admin_pwd')
       .exec();
     if (!user) {
-      throw new BadRequestException('用户不存在');
+      throw new BadRequestException('用户不存在,请检查用户名');
     }
     if (!user.admin_status) {
       throw new BadRequestException('账户被禁用');

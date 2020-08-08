@@ -3,12 +3,16 @@ import { ApiTags } from '@nestjs/swagger';
 import { Video } from '@libs/db/schemas';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { AuthGuard } from '@nestjs/passport';
 import { Crud } from '@admin/decorator/crud';
+import { Roles } from '@admin/decorator/roles.decorator';
 @ApiTags('影片')
 @Crud({
   model: Video,
-  decorators: [UseGuards(AuthGuard('jwt-admin'))],
+  routes: {
+    find: {
+      decorators: [Roles('admin')],
+    },
+  },
 })
 @Controller('vod')
 export class VodController {
