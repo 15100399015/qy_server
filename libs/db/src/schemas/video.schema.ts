@@ -46,7 +46,7 @@ export class Video extends Document {
     type: Number,
     default: 0,
   })
-  group_id: Number;
+  group_id: number;
   @ApiProperty({
     description: '影片名称',
   })
