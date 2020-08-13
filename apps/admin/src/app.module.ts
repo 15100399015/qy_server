@@ -1,3 +1,4 @@
+import { UploadModule } from './modules/upload/upload.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { Module } from '@nestjs/common';
 import { CommonModule } from '@libs/common';
@@ -10,6 +11,7 @@ import { SettingModule } from './modules/setting/setting.module';
 import { RolesGuard } from './guard/roles.guard';
 @Module({
   imports: [
+    UploadModule,
     AdminModule,
     CommonModule,
     AuthModule,

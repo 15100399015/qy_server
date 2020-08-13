@@ -40,9 +40,12 @@
     "@types/passport": "^1.0.4",
     "@types/passport-jwt": "^3.0.3",
     "@types/passport-local": "^1.0.33",
+    "ali-oss": "^6.10.0",
     "bcryptjs": "^2.4.3",
+    "crypto": "^1.0.1",
     "crypto-js": "^4.0.0",
     "mongoose": "^5.9.27",
+    "multer-aliyun-oss": "^1.1.0",
     "nestjs-mongoose-crud": "^2.0.0",
     "node-uuid": "^1.4.8",
     "passport": "^0.4.1",
@@ -101,7 +104,9 @@
       "@app/config/(.*)": "<rootDir>/libs/config/src/$1",
       "@app/config": "<rootDir>/libs/config/src",
       "@libs/common/(.*)": "<rootDir>/libs/common/src/$1",
-      "@libs/common": "<rootDir>/libs/common/src"
+      "@libs/common": "<rootDir>/libs/common/src",
+      "@lib/upload/(.*)": "<rootDir>/libs/upload/src/$1",
+      "@lib/upload": "<rootDir>/libs/upload/src"
     }
   }
 }

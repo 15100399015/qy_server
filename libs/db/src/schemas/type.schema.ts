@@ -5,19 +5,12 @@ import { ApiProperty } from '@nestjs/swagger';
 // 分类表
 @Schema()
 export class Type extends Document {
-  @ApiProperty({ description: '分类id' })
-  @Prop({
-    typeL: Number,
-    index: true,
-    required: true,
-  })
-  type_id: number;
   @ApiProperty({ description: '所属用户组' })
   @Prop({
-    type: Number,
+    type: [Number],
     default: 0,
   })
-  group_id: number;
+  group_id: number[];
   @ApiProperty({ description: '分类类型1影片,2文章' })
   @Prop({
     type: Number,
@@ -30,9 +23,10 @@ export class Type extends Document {
   @Prop({
     type: String,
     required: true,
+    unique: true,
   })
   type_name: string;
-  @ApiProperty({ description: '中文全拼' })
+  @ApiProperty({ description: '别名' })
   @Prop({
     type: String,
   })
@@ -61,13 +55,11 @@ export class Type extends Document {
   })
   type_logo: string;
   @ApiProperty({ description: '分类封面' })
-  //
   @Prop({
     type: String,
   })
   type_pic: string;
   @ApiProperty({ description: '扩展信息' })
-  //
   @Prop({
     type: String,
   })

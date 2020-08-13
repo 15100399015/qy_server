@@ -13,16 +13,6 @@ import { ApiProperty } from '@nestjs/swagger';
 })
 export class Video extends Document {
   @ApiProperty({
-    description: '影片唯一id',
-    required: false,
-  })
-  @Prop({
-    type: Number,
-    index: true,
-    required: true,
-  })
-  video_id: number;
-  @ApiProperty({
     description: '顶级分类id',
   })
   @Prop({
