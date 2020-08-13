@@ -1,20 +1,22 @@
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
-import { aliossStorage } from './storage/ali-oss';
+import { aliossStorage, fileFilter } from './storage/ali-oss';
+// AccessKey ID LTAI4G9MAwv3CdvFskBENHLC
+// AccessKey Secret baeyDFZraajguOt2vvkj2QMvVrciwA
 @Module({
   imports: [
     MulterModule.registerAsync({
       useFactory: () => ({
-        // storage: aliossStorage({
-        //   config: {
-        //     region: 'qycmsadmin@1938695811778053.onaliyun.com',
-        //     accessKeyId: 'LTAI4GHu14Hdp6nLtEDTirGo',
-        //     accessKeySecret: 'KfEmISOW9u7qB4fQpc3S9bE3JRXYyQ',
-        //     bucket: 'qycms',
-        //   },
-        // }),
-        
+        storage: aliossStorage({
+          config: {
+            region: 'oss-cn-beijing',
+            accessKeyId: 'LTAI4G9MAwv3CdvFskBENHLC',
+            accessKeySecret: 'baeyDFZraajguOt2vvkj2QMvVrciwA',
+            bucket: 'qycms',
+          },
+        }),
+        fileFilter,
       }),
     }),
   ],
