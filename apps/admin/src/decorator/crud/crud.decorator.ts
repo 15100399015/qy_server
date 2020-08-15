@@ -1,19 +1,18 @@
 // 引入自己的 controller 以及 dto
-import { CrudController, CrudPlaceholderDto } from './crud.controller';
-import { PARAMTYPES_METADATA } from '@nestjs/common/constants';
+import { CrudController } from './crud.controller';
 // 工具方法
 import { get, merge } from 'lodash';
 import { CrudOptionsWithModel } from './crud.interface';
 import { CrudConfig } from './crud-config';
 // 克隆元数据方法
 import { cloneDecorators, clonePropDecorators } from './util';
-import { ApiBody } from '@nestjs/swagger';
 
 // 支持的路由
 const CRUD_ROUTES = {
   count: 'count',
   find: 'find',
   findOne: 'findOne',
+  findAll: 'findAll',
   create: 'create',
   insertMany: 'insertMany',
   update: 'update',
@@ -23,10 +22,11 @@ const CRUD_ROUTES = {
 };
 const allMethods = Object.values(CRUD_ROUTES);
 export const Crud = (options: CrudOptionsWithModel) => {
-  // 合并配置 大概就是将默认配置和自定义配置合并起来
+  // 合并配置
   options = merge({}, CrudConfig.options, options);
+  // 返回真正的装饰器
   return (target) => {
-    // 被装饰controller
+    // 被装饰的controller
     const Controller = target;
     // controller 原型
     const controller = target.prototype;
@@ -45,6 +45,7 @@ export const Crud = (options: CrudOptionsWithModel) => {
       if (controller[method]) continue;
       // 添加crud方法
       controller[method] = function (...args) {
+        // 绑定我们自己的方法
         return crudController[method].apply(this, args);
       };
 
@@ -54,28 +55,11 @@ export const Crud = (options: CrudOptionsWithModel) => {
       clonePropDecorators(crudController, controller, method);
       clonePropDecorators(CrudController, Controller, method);
 
-      // 获取参数元数据 / key 宿主 原型key
-      // const types: [] = Reflect.getMetadata(
-      //   PARAMTYPES_METADATA,
-      //   controller,
-      //   method,
-      // );
-
-      // const _ApiBody = types
-      //   .map((v: any) => {
-      //     if (get(v, 'name') === CrudPlaceholderDto.name) {
-      //       return ApiBody({
-      //         type: get(options, `routes.${method}.dto`, options.model),
-      //       });
-      //     }
-      //   })
-      //   .filter((item) => item && item);
-
       // 添加用户定义的装饰器,1装饰器列表, 宿主,key,
       Reflect.decorate(
         [
-          ...get(options, `routes.${method}.decorators`, []),
           ...get(options, `decorators`, []),
+          ...get(options, `routes.${method}.decorators`, []),
         ],
         controller,
         method,

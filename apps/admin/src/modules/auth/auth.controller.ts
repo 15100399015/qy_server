@@ -10,7 +10,6 @@ import {
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { encrypt } from '@admin/util/crypto';
 import { createToken } from '@admin/util/createToken';
 import { Roles } from '@admin/decorator/roles.decorator';
 
@@ -34,10 +33,7 @@ export class AuthController {
     await this.authService.upToken(_id, token);
     // 返回token
     return {
-      code: 20000,
-      data: {
-        token: token,
-      },
+      token: token,
     };
   }
   // 获取当前用户信息
@@ -51,15 +47,12 @@ export class AuthController {
       admin_portrait,
       admin_name,
     } = await this.authService.getInfo(_id);
-    // // 返回用到的用户信息
+    // 返回用到的用户信息
     return {
-      code: 20000,
-      data: {
-        roles: admin_roles,
-        introduction: admin_introduction,
-        avatar: admin_portrait,
-        name: admin_name,
-      },
+      roles: admin_roles,
+      introduction: admin_introduction,
+      avatar: admin_portrait,
+      name: admin_name,
     };
   }
 
@@ -72,7 +65,6 @@ export class AuthController {
     await this.authService.removeToken(_id);
     // 返回数据
     return {
-      code: 20000,
       data: 'success',
     };
   }
@@ -92,10 +84,7 @@ export class AuthController {
     await this.authService.upToken(_id, token);
     // 返回token
     return {
-      code: 20000,
-      data: {
-        token: token,
-      },
+      token: token,
     };
   }
 
@@ -107,7 +96,6 @@ export class AuthController {
     const newPwd: string = body.newPwd;
     await this.authService.resetPwd(_id, newPwd);
     return {
-      code: 20000,
       data: 'success',
     };
   }

@@ -7,13 +7,10 @@ import {
   Delete,
   Body,
   HttpStatus,
-  Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiParam, ApiBody } from '@nestjs/swagger';
 import { CrudQuery, ICrudQuery } from './crud-query.decorator';
-import { defaultPaginate } from './crud-config';
 import { get } from 'lodash';
-import { CrudOptionsWithModel, PaginateKeys } from './crud.interface';
+import { CrudOptionsWithModel } from './crud.interface';
 import { DiyHttpException } from './util';
 
 export class CrudPlaceholderDto {}
@@ -24,86 +21,72 @@ export class CrudController {
     public crudOptions?: CrudOptionsWithModel,
   ) {}
   // 获取总数
-  @ApiOperation({ summary: 'count a record' })
   @Get('count')
   count(): Promise<number> {
     return this.model.countDocuments().exec();
   }
-  // 查找
-  @ApiQuery({
-    name: 'query',
-    type: String,
-    required: false,
-    description: 'Query options',
-  })
-  @ApiOperation({ summary: 'Find all records' })
+  // 按条件查找
   @Get('find')
   find(@CrudQuery('query') query: ICrudQuery = {}) {
     let {
-      where = get(this.crudOptions, 'routes.find.where', {}),
-      limit = get(this.crudOptions, 'routes.find.limit', 10),
+      where = {},
+      limit = 10,
       page = 1,
-      skip = 0,
-      populate = get(this.crudOptions, 'routes.find.populate', undefined),
-      sort = get(this.crudOptions, 'routes.find.sort', undefined),
+      populate = undefined,
+      sort = undefined,
+      select = undefined,
     } = query;
-    if (skip < 1) {
-      skip = (page - 1) * limit;
-    }
-    const paginateKeys: PaginateKeys | false = get(
-      this.crudOptions,
-      'routes.find.paginate',
-      defaultPaginate,
-    );
-
+    let skip = (page - 1) * limit;
     const find = async () => {
       const data = await this.model
         .find()
+        // 规则
         .where(where)
+        // 筛选字段
+        .select(select)
+        // 跳过
         .skip(skip)
+        // 当前数据
         .limit(limit)
+        // 排序方式
         .sort(sort)
+        // 填充
         .populate(populate);
-      if (paginateKeys !== false) {
-        const total = await this.model.countDocuments(where);
-        return {
-          [paginateKeys.total]: total,
-          [paginateKeys.data]: data,
-          [paginateKeys.lastPage]: Math.ceil(total / limit),
-          [paginateKeys.currentPage]: page,
-          [paginateKeys.limit]: data.length,
-        };
-      }
-      return data;
+      const total = await this.model.countDocuments(where);
+      return {
+        total: total,
+        data: data,
+        lastPage: Math.ceil(total / limit),
+        currentPage: page,
+        limit: data.length,
+      };
     };
     return find();
   }
   // 单个查找
-  @ApiQuery({
-    name: 'conditions',
-    type: Object,
-    required: true,
-    description: 'Conditions options',
-  })
-  @ApiOperation({ summary: 'findOne all records' })
   @Get('findOne')
-  async findOne(@CrudQuery('conditions') conditions: any) {
-    return this.model.findOne(conditions).exec();
+  async findOne(@CrudQuery('query') query: any) {
+    const { where = {}, select = undefined } = query;
+    return this.model.findOne(where).select(select).exec();
+  }
+  // 查找所有
+  @Get('findAll')
+  async findAll(@CrudQuery('query') query) {
+    const { where = {}, select = undefined } = query;
+    return this.model.find().where(where).select(select).exec();
   }
   // 创建数据
-  @ApiOperation({ summary: 'Create a record' })
   @Post('create')
   async create(@Body() body: CrudPlaceholderDto) {
     const transform = get(this.crudOptions, 'routes.create.transform');
     if (transform) {
       body = transform(body);
     }
-    return this.model.create(body).catch(err => {
+    return this.model.create(body).catch((err) => {
       throw new DiyHttpException(HttpStatus.BAD_REQUEST, err);
     });
   }
   // 插入多个
-  @ApiOperation({ summary: 'InsertMany a record' })
   @Post('insertMany')
   async insertMany(@Body() body: CrudPlaceholderDto) {
     return this.model
@@ -111,17 +94,11 @@ export class CrudController {
         ordered: false,
         rawResult: false,
       })
-      .catch(err => {
+      .catch((err) => {
         throw new DiyHttpException(HttpStatus.BAD_REQUEST, err);
       });
   }
   // 根据id更新一条数据
-  @ApiParam({
-    name: 'id',
-    type: String,
-    required: true,
-  })
-  @ApiOperation({ summary: 'Update a record' })
   @Put('update/:id')
   async update(@Param('id') id: string, @Body() body: CrudPlaceholderDto) {
     const transform = get(this.crudOptions, 'routes.update.transform');
@@ -134,38 +111,30 @@ export class CrudController {
         upsert: false,
         runValidators: true,
       })
-      .catch(err => {
+      .catch((err) => {
         throw new DiyHttpException(HttpStatus.BAD_REQUEST, err);
       });
   }
   // 更新多个
-  @ApiOperation({ summary: 'UpdateMany a record' })
   @Put('updateMany')
   updateMany(
     @Body('conditions') conditions: any,
     @Body('doc') doc: CrudPlaceholderDto,
   ) {
-    return this.model.updateMany(conditions, doc).catch(err => {
+    return this.model.updateMany(conditions, doc).catch((err) => {
       throw new DiyHttpException(HttpStatus.BAD_REQUEST, err);
     });
   }
   // 根据id删除一条数据
-  @ApiQuery({
-    name: 'id',
-    type: String,
-    required: true,
-  })
-  @ApiOperation({ summary: 'Delete a record' })
-  @Delete('delete')
-  delete(@Query('id') id: string) {
-    return this.model.findByIdAndRemove(id).catch(err => {
+  @Delete('delete/:id')
+  delete(@Param('id') id: string) {
+    return this.model.findByIdAndRemove(id).catch((err) => {
       throw new DiyHttpException(HttpStatus.BAD_REQUEST, err);
     });
   }
   // 删除多个
-  @ApiOperation({ summary: 'DeleteMany a record' })
   @Delete('deleteMany')
-  deleteMany(@Body('conditions') conditions: any) {
+  deleteMany(@Body('conditions') conditions: CrudPlaceholderDto) {
     return this.model.deleteMany(conditions).exec();
   }
 }

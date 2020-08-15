@@ -5,11 +5,11 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { DiyHttpException } from './util';
+
 export class ICrudQuery {
   where?: any;
   limit?: number;
   page?: number;
-  skip?: number;
   sort?: string | any;
   populate?: string | any;
   select?: string | any;

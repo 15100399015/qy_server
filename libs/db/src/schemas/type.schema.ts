@@ -7,10 +7,9 @@ import { ApiProperty } from '@nestjs/swagger';
 export class Type extends Document {
   @ApiProperty({ description: '所属用户组' })
   @Prop({
-    type: [Number],
-    default: 0,
+    type: [String],
   })
-  group_id: number[];
+  group_id: string[];
   @ApiProperty({ description: '分类类型1影片,2文章' })
   @Prop({
     type: Number,
@@ -39,10 +38,10 @@ export class Type extends Document {
   type_sort: number;
   @ApiProperty({ description: '父级分类id 0表示一级分类' })
   @Prop({
-    type: Number,
-    default: 0,
+    type: String,
+    default: '',
   })
-  type_pid: number;
+  type_pid: string;
   @ApiProperty({ description: '分类状态' })
   @Prop({
     type: Boolean,

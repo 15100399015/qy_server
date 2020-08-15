@@ -10,6 +10,7 @@ export class Admin extends Document {
   @Prop({
     type: String,
     required: true,
+    min: 6,
     unique: true,
   })
   admin_name: string;

@@ -7,6 +7,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { ArticleModule } from './modules/article/article.module';
 import { VodModule } from './modules/vod/vod.module';
 import { UserModule } from './modules/user/user.module';
+import { TypeModule } from './modules/type/type.module';
+import { GroupModule } from './modules/group/group.module';
 import { SettingModule } from './modules/setting/setting.module';
 import { RolesGuard } from './guard/roles.guard';
 @Module({
@@ -19,6 +21,8 @@ import { RolesGuard } from './guard/roles.guard';
     VodModule,
     SettingModule,
     UserModule,
+    TypeModule,
+    GroupModule,
   ],
   providers: [
     {
