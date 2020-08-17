@@ -7,16 +7,16 @@ export interface CrudRouteWithDto extends CrudRoute {
 }
 
 export interface CrudRoutes {
-  count?: false;
-  find?: CrudRoute | false;
-  findOne?: CrudRoute | false;
-  findAll?: CrudRoute | false;
-  create?: CrudRouteWithDto | false;
-  insertMany?: CrudRouteWithDto | false;
-  update?: CrudRouteWithDto | false;
-  updateMany?: CrudRouteWithDto | false;
-  delete?: CrudRoute | false;
-  deleteMany?: CrudRoute | false;
+  count?: boolean;
+  find?: CrudRoute | boolean;
+  findOne?: CrudRoute | boolean;
+  findAll?: CrudRoute | boolean;
+  create?: CrudRouteWithDto | boolean;
+  insertMany?: CrudRouteWithDto | boolean;
+  update?: CrudRouteWithDto | boolean;
+  updateMany?: CrudRouteWithDto | boolean;
+  delete?: CrudRoute | boolean;
+  deleteMany?: CrudRoute | boolean;
 }
 export interface CrudOptions {
   routes?: CrudRoutes;

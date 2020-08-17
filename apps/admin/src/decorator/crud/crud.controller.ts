@@ -110,6 +110,7 @@ export class CrudController {
         new: true,
         upsert: false,
         runValidators: true,
+        context: 'query',
       })
       .catch((err) => {
         throw new DiyHttpException(HttpStatus.BAD_REQUEST, err);

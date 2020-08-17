@@ -9,6 +9,9 @@ import { Roles } from '@admin/decorator/roles.decorator';
 @Crud({
   model: Type,
   decorators: [Roles('admin')],
+  routes: {
+    updateMany: true,
+  },
 })
 @Controller('type')
 export class TypeController {

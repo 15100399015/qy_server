@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { RootModel } from './modules/model/model.module';
 import { ExtraModule } from './modules/extra/extra.module';
+// plugin
+import uniqueValidator = require('mongoose-unique-validator');
+
 @Module({
   imports: [
     RootModel,
@@ -17,6 +20,12 @@ import { ExtraModule } from './modules/extra/extra.module';
         useUnifiedTopology: true,
         useCreateIndex: true,
         useFindAndModify: false,
+        connectionFactory: (connection) => {
+          connection.plugin(uniqueValidator, {
+            message: '{PATH}不可重复',
+          });
+          return connection;
+        },
       }),
     }),
   ],

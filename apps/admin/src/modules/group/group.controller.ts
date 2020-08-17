@@ -10,6 +10,9 @@ import { Roles } from '@admin/decorator/roles.decorator';
 @Crud({
   model: Group,
   decorators: [Roles('admin')],
+  routes: {
+    deleteMany: true,
+  },
 })
 @Controller('group')
 export class GroupController {
