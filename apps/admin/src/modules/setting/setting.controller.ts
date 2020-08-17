@@ -1,4 +1,10 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  BadRequestException,
+} from '@nestjs/common';
 import { ExtraService } from '@libs/db/modules/extra/extra.service';
 import { ApiTags, ApiBody } from '@nestjs/swagger';
 import { object } from '@hapi/joi';
@@ -8,7 +14,7 @@ import { object } from '@hapi/joi';
 export class SettingController {
   constructor(private readonly extraService: ExtraService) {}
   // 获取设置
-  @Get()
+  @Get('get')
   getSetting() {
     return this.extraService.get();
   }
@@ -16,9 +22,10 @@ export class SettingController {
   @ApiBody({
     type: object,
   })
-  @Post()
+  @Post('set')
   setSetting(@Body() body) {
     let { path, value } = body;
+    if (!path) return new BadRequestException('路径错误');
     return this.extraService.set(path, value);
   }
 }
