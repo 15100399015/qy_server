@@ -10,7 +10,7 @@ import { Roles } from '@admin/decorator/roles.decorator';
   model: Type,
   decorators: [Roles('admin')],
   routes: {
-    updateMany: true,
+    delete: false,
   },
 })
 @Controller('type')

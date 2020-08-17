@@ -14,7 +14,6 @@ import { CrudOptionsWithModel } from './crud.interface';
 import { DiyHttpException } from './util';
 
 export class CrudPlaceholderDto {}
-// controller
 export class CrudController {
   constructor(
     public model: Model<{} | any>,
@@ -40,17 +39,11 @@ export class CrudController {
     const find = async () => {
       const data = await this.model
         .find()
-        // 规则
         .where(where)
-        // 筛选字段
         .select(select)
-        // 跳过
         .skip(skip)
-        // 当前数据
         .limit(limit)
-        // 排序方式
         .sort(sort)
-        // 填充
         .populate(populate);
       const total = await this.model.countDocuments(where);
       return {
