@@ -12,6 +12,10 @@ import { Roles } from '@admin/decorator/roles.decorator';
   decorators: [Roles('admin')],
   routes: {
     deleteMany: true,
+    find: true,
+    findAll: true,
+    findOne: true,
+    update: true,
   },
 })
 @Controller('group')
