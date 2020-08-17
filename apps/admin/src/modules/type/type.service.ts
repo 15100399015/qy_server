@@ -12,9 +12,28 @@ export class TypeService {
 
   //   检查当前分类是否有子分类
   async inspectChildren(_id) {
-    let num = await this.TypeModel.findOne({
+    const number = await this.TypeModel.findOne({
       type_pid: _id,
-    }).count();
-    return num > 0;
+    })
+      .count()
+      .exec();
+    return number > 0;
+  }
+  // 检查多个id
+  async inspectChildrens(_idArr) {
+    const number = await this.TypeModel.find({
+      type_pid: { $in: _idArr },
+    })
+      .count()
+      .exec();
+    return number > 0;
+  }
+  // 验证当前分类是否存在
+  async verifyTypeExist(_id) {
+    return this.TypeModel.findById(_id).count().exec();
+  }
+  // 验证分组是否存在
+  async verifyGroupExist(_id) {
+    return this.GroupModel.findById(_id).count().exec();
   }
 }

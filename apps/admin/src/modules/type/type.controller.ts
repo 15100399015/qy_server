@@ -34,9 +34,11 @@ export class TypeController {
   // 删除之前检查有没有子分类
   @Delete('delete/:id')
   async delete(@Param('id') id) {
+    // 删除之前查看是否有子分类，如果有则抛出错误
     if (await this.typeService.inspectChildren(id)) {
       throw new ForbiddenException('此分类下还有其他分类');
     }
+    // 删除
     return this.model.findByIdAndDelete(id).exec();
   }
   // 更新之前检查用户组，分类

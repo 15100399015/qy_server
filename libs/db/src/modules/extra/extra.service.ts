@@ -1,25 +1,57 @@
 import { Injectable } from '@nestjs/common';
-import { writeFile } from 'fs';
+import { writeFile, mkdir, existsSync, readFile } from 'fs';
+import { join } from 'path';
 import { get, set } from 'lodash';
+
+function S(dir, fileName) {
+  return new Promise((resolv, reject) => {
+    const fliePath = join(__dirname, dir, fileName);
+    if (existsSync(fliePath)) return resolv();
+    mkdir(dir, (err) => {
+      if (err) return reject();
+      writeFile(fliePath, JSON.stringify({}), (err) => {
+        if (err) return reject();
+        readFile(fliePath, (err) => {
+          if (err) return reject();
+          return resolv();
+        });
+      });
+    });
+  });
+}
+
 @Injectable()
 export class ExtraService {
+  private readonly SETTINGFILEPATH = './';
+  private readonly SETTINGFILENAME = 'setting.json';
   // 获取配置文件内容
-  get(path?: string) {
-    if (path) return get(require('@libs/db/extraFile/setting.json'), path);
-    return require('@libs/db/extraFile/setting.json');
+  async get(path?: string) {
+    await S(this.SETTINGFILEPATH, this.SETTINGFILENAME);
+    if (path) {
+      return get(
+        require(this.SETTINGFILEPATH + this.SETTINGFILENAME),
+        path,
+        undefined,
+      );
+    }
+    return require(this.SETTINGFILEPATH + this.SETTINGFILENAME);
   }
   // 设置文件内容
   async set(path: string, value: any) {
+    await S(this.SETTINGFILEPATH, this.SETTINGFILENAME);
     let newSettingStr = JSON.stringify(
-      set(require('@libs/db/extraFile/setting.json'), path, value),
+      set(require(this.SETTINGFILEPATH + this.SETTINGFILENAME), path, value),
     );
-    let newSetting = await new Promise((res, rej) => {
-      writeFile('@libs/db/extraFile/setting.json', newSettingStr, (err) => {
-        if (err) return rej(err);
-        return res(require('@libs/db/extraFile/setting.json'));
-      });
+    let newSetting = await new Promise((resolve, reject) => {
+      writeFile(
+        this.SETTINGFILEPATH + this.SETTINGFILENAME,
+        newSettingStr,
+        (err) => {
+          if (err) return reject(err);
+          return resolve(require(this.SETTINGFILEPATH + this.SETTINGFILENAME));
+        },
+      );
     });
-
-    return Promise.resolve(newSetting);
+    return newSetting;
   }
 }
