@@ -2,7 +2,6 @@ export interface CrudRoute {
   decorators?: MethodDecorator[];
 }
 export interface CrudRouteWithDto extends CrudRoute {
-  dto?: any;
   transform?: (data: any) => any;
 }
 

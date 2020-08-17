@@ -11,6 +11,8 @@ import { Roles } from '@admin/decorator/roles.decorator';
   decorators: [Roles('admin')],
   routes: {
     delete: false,
+    deleteMany: false,
+    insertMany: false,
   },
 })
 @Controller('type')
