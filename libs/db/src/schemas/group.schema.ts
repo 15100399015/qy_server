@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import { string } from '@hapi/joi';
 
 // 用户组文档
 @Schema()
@@ -18,6 +19,11 @@ export class Group extends Document {
     default: true,
   })
   group_status: boolean;
+  @ApiProperty({ description: '用户组标识颜色' })
+  @Prop({
+    type: String,
+  })
+  group_color: string;
   @ApiProperty({ description: '用户组天积分' })
   @Prop({
     type: Number,

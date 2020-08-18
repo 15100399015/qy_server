@@ -33,10 +33,10 @@ export class Article extends Document {
   type_id_1: number;
   @ApiProperty({ description: '分组id' })
   @Prop({
-    type: Number,
+    type: [String],
     required: true,
   })
-  group_id: number;
+  group_id: string[];
   @ApiProperty({ description: '文章名字' })
   @Prop({
     type: String,

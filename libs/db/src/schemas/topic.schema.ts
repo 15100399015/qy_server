@@ -19,10 +19,9 @@ export class Topic extends Document {
   topic_id: number;
   @ApiProperty({ description: '所属用户组' })
   @Prop({
-    type: Number,
-    default: 0,
+    type: [String],
   })
-  group_id: number;
+  group_id: string[];
   @ApiProperty({ description: '关联分类id, 0代表不属于任何分类' })
   @Prop({
     type: Number,

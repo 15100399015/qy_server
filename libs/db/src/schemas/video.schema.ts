@@ -33,10 +33,9 @@ export class Video extends Document {
     description: '有权限访问此视频的用户组id',
   })
   @Prop({
-    type: Number,
-    default: 0,
+    type: [String],
   })
-  group_id: number;
+  group_id: string[];
   @ApiProperty({
     description: '影片名称',
   })
