@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Delete, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Group } from '@libs/db/schemas';
 import { InjectModel } from '@nestjs/mongoose';
@@ -11,7 +11,6 @@ import { Roles } from '@admin/decorator/roles.decorator';
   model: Group,
   decorators: [Roles('admin')],
   routes: {
-    deleteMany: true,
     find: true,
     findAll: true,
     findOne: true,
@@ -21,4 +20,10 @@ import { Roles } from '@admin/decorator/roles.decorator';
 @Controller('group')
 export class GroupController {
   constructor(@InjectModel(Group.name) private readonly model: Model<Group>) {}
+
+  @Delete('deleteMany')
+  deleteMany() {}
+
+  @Delete('delete/:id')
+  delete(@Param('id') id) {}
 }

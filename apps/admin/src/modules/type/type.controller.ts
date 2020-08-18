@@ -5,6 +5,7 @@ import {
   Put,
   Param,
   ForbiddenException,
+  Body,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Type } from '@libs/db/schemas';
@@ -20,6 +21,7 @@ import { TypeService } from './type.service';
   routes: {
     find: true,
     findOne: true,
+    findAll: true,
   },
 })
 @Controller('type')
@@ -30,7 +32,12 @@ export class TypeController {
   ) {}
   // 创建之前检查用户组和父分类
   @Post('create')
-  create() {}
+  async create(@Body() body) {
+    let { type_pid, group_id } = body;
+    if (!(await this.typeService.inspectType(type_pid))) {
+      throw new ForbiddenException('父分类不存在');
+    }
+  }
   // 删除之前检查有没有子分类
   @Delete('delete/:id')
   async delete(@Param('id') id) {
@@ -42,6 +49,14 @@ export class TypeController {
     return this.model.findByIdAndDelete(id).exec();
   }
   // 更新之前检查用户组，分类
-  @Put('update')
-  update() {}
+  @Put('update/:id')
+  async update(@Param('id') id, @Body() body) {
+    let { type_pid, group_id } = body;
+    if (!(await this.typeService.inspectType(type_pid))) {
+      throw new ForbiddenException('父分类不存在');
+    }
+  }
+  // 删除多个
+  @Delete('deleteMany')
+  deleteMany() {}
 }

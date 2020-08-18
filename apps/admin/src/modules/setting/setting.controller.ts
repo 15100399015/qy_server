@@ -4,6 +4,8 @@ import {
   Post,
   Body,
   BadRequestException,
+  Query,
+  Delete,
 } from '@nestjs/common';
 import { ExtraService } from '@libs/db/modules/extra/extra.service';
 import { ApiTags, ApiBody } from '@nestjs/swagger';
@@ -15,8 +17,8 @@ export class SettingController {
   constructor(private readonly extraService: ExtraService) {}
   // 获取设置
   @Get('get')
-  getSetting() {
-    return this.extraService.get();
+  getSetting(@Query('path') path) {
+    return this.extraService.get(path);
   }
   // 更改设置
   @ApiBody({
@@ -24,8 +26,13 @@ export class SettingController {
   })
   @Post('set')
   setSetting(@Body() body) {
-    let { path, value } = body;
-    if (!path) return new BadRequestException('路径错误');
+    const { path, value } = body;
+    if (path) return new BadRequestException('路径错误');
     return this.extraService.set(path, value);
+  }
+
+  @Delete('del')
+  del(@Query('path') path) {
+    if (path) return new BadRequestException('路径错误');
   }
 }

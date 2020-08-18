@@ -39,12 +39,13 @@ export class CrudController {
     const find = async () => {
       const data = await this.model
         .find()
-        .where(where)
         .select(select)
+        .where(where)
         .skip(skip)
         .limit(limit)
         .sort(sort)
-        .populate(populate);
+        .populate(populate)
+        .exec();
       const total = await this.model.countDocuments(where);
       return {
         total: total,

@@ -9,7 +9,11 @@ export class TypeService {
     @InjectModel(Type.name) private readonly TypeModel: Model<Type>,
     @InjectModel(Group.name) private readonly GroupModel: Model<Type>,
   ) {}
-
+  //   检查当前分类是否有子分类
+  async inspectType(_id) {
+    const number = await this.TypeModel.findById(_id).count().exec();
+    return number > 0;
+  }
   //   检查当前分类是否有子分类
   async inspectChildren(_id) {
     const number = await this.TypeModel.findOne({

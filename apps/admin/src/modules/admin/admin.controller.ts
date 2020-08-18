@@ -8,6 +8,11 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('管理员')
 @Crud({
   model: Admin,
+  routes: {
+    find: true,
+    create: true,
+    delete: true,
+  },
 })
 @Controller('admin')
 export class AdminController {
