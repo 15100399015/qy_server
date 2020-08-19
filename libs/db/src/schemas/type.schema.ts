@@ -3,7 +3,11 @@ import { Document, SchemaTypes } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Schema({
-  toJSON: { virtuals: true },
+  id: false,
+  versionKey: false,
+  toJSON: {
+    virtuals: true,
+  },
 })
 export class Type extends Document {
   @ApiProperty({ description: '分类类型1影片,2文章' })
@@ -71,13 +75,13 @@ export class Type extends Document {
 }
 
 export const TypeSchema = SchemaFactory.createForClass(Type);
-// 子分类
+
+// 虚拟值
 TypeSchema.virtual('children', {
   ref: Type.name,
   localField: '_id',
   foreignField: 'type_pid',
 });
-// 分类类型
 TypeSchema.virtual('type_mold').get(function (this: Type) {
   if (this.type_mid === 1) {
     return {

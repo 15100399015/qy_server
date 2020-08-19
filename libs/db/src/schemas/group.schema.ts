@@ -3,7 +3,10 @@ import { Document, SchemaTypes } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
 // 用户组文档
-@Schema()
+@Schema({
+  versionKey: false,
+  id: false,
+})
 export class Group extends Document {
   @ApiProperty({ description: '组名字' })
   @Prop({

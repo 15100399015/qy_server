@@ -23,6 +23,16 @@ export class TypeController {
     private readonly typeService: TypeService,
     @InjectModel(Type.name) private readonly model: Model<Type>,
   ) {}
+  @Roles('admin')
+  @Get('findType1/:mid')
+  async findType1(@Param('mid') mid: number) {
+    return this.model
+      .find({
+        type_pid: '',
+        type_mid: mid,
+      })
+      .exec();
+  }
   // 无条件获取所有信息
   @Roles('admin')
   @Get('findAll')
@@ -62,12 +72,12 @@ export class TypeController {
     }
     if (type_pid !== '' && type_pid !== undefined) {
       if (!(await this.typeService.inspectTypeById(type_pid))) {
-        throw new ForbiddenException('父分类不存在');
+        throw new ForbiddenException('顶级分类不存在');
       }
     }
-    if (group_ids.length !== 0 || group_ids !== undefined) {
+    if (group_ids !== undefined && group_ids.length !== 0) {
       if (!(await this.typeService.inspectGroupById(group_ids))) {
-        throw new ForbiddenException('检查权限组');
+        throw new ForbiddenException('某些权限组不存在');
       }
     }
     return this.model.create(doc);
@@ -84,44 +94,25 @@ export class TypeController {
     }
     if (type_pid !== '' && type_pid !== undefined) {
       if (!(await this.typeService.inspectTypeByName(type_pid))) {
-        throw new ForbiddenException('父分类不存在');
+        throw new ForbiddenException('顶级分类不存在');
       }
     }
-    if (group_ids.length !== 0 || group_ids !== undefined) {
+    if (group_ids !== undefined && group_ids.length !== 0) {
       if (!(await this.typeService.inspectGroupById(group_ids))) {
-        throw new ForbiddenException('检查权限组');
+        throw new ForbiddenException('某些权限组不存在');
       }
     }
     return this.model.findByIdAndUpdate(id, doc).exec();
   }
-  // 移动子分类
+  // 更新状态
   @Roles('admin')
-  @Put('shift')
-  async shift(@Body() body) {
-    const { _idArr, type_pid } = body;
-    if (!(await this.typeService.inspectTypeByName(type_pid))) {
-      throw new ForbiddenException('父分类不存在');
-    }
-    if (await this.typeService.inspectsChildren(_idArr)) {
-      throw new ForbiddenException('请先清理子分类');
-    }
-    return this.model.updateMany(
-      {
-        _id: { $in: _idArr },
-      },
-      {
-        type_pid,
-      },
-    );
-  }
-  @Put('changStatus')
-  async changStatus(@Body() body) {
-    const { status, id } = body;
+  @Put('changStatus/:id')
+  async changStatus(@Param('id') id: string, @Body() body) {
     if (!(await this.typeService.inspectTypeById(id))) {
       throw new ForbiddenException('分类不存在');
     }
     return this.model.findByIdAndUpdate(id, {
-      type_status: status,
+      type_status: body.status,
     });
   }
   // 删除
@@ -129,7 +120,7 @@ export class TypeController {
   @Delete('delete/:id')
   async delete(@Param('id') id: string) {
     if (await this.typeService.inspectChildren(id)) {
-      throw new ForbiddenException('此分类下还有其他分类');
+      throw new ForbiddenException('请先清理子分类');
     }
     return this.model.findByIdAndDelete(id).exec();
   }

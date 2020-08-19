@@ -12,7 +12,7 @@ export class GroupService {
     @InjectModel(Article.name) private readonly articleModel: Model<Article>,
     @InjectModel(Topic.name) private readonly topicModel: Model<Topic>,
   ) {}
-  async inspect(group_id) {
+  async inspect(group_id: string) {
     const rule = { group_id };
     if (await this.typeModel.findOne(rule)) return '分类';
     if (await this.videoModel.findOne(rule)) return '视频';
@@ -20,5 +20,11 @@ export class GroupService {
     if (await this.articleModel.findOne(rule)) return '文章';
     if (await this.topicModel.findOne(rule)) return '专辑';
     return true;
+  }
+  async inspectGroupByName(group_name: string) {
+    return await this.groupModel.findOne({ group_name });
+  }
+  async inspectGroupById(id: string) {
+    return await this.groupModel.findById(id);
   }
 }
