@@ -2,12 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, SchemaTypes } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
-// 分类表
 @Schema({
   toJSON: { virtuals: true },
 })
 export class Type extends Document {
-  @ApiProperty({ description: '所属用户组' })
+  @ApiProperty({ description: '所属用户组,id数组' })
   @Prop({
     type: [
       {
@@ -42,7 +41,7 @@ export class Type extends Document {
     default: 0,
   })
   type_sort: number;
-  @ApiProperty({ description: '父级分类id 0表示一级分类' })
+  @ApiProperty({ description: '父级分类id' })
   @Prop({
     type: SchemaTypes.String,
     default: '',
@@ -76,6 +75,11 @@ TypeSchema.virtual('children', {
   ref: Type.name,
   localField: '_id',
   foreignField: 'type_pid',
+});
+TypeSchema.virtual('type_mold').get(function (this: Type) {
+  if (this.type_mid === 1) return '视频';
+  if (this.type_mid === 2) return '文章';
+  return this.type_mid;
 });
 
 export const TypeDocName = 'qy' + '_' + Type.name.toLowerCase();

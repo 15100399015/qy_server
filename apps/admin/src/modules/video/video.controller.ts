@@ -14,7 +14,7 @@ import { Roles } from '@admin/decorator/roles.decorator';
     },
   },
 })
-@Controller('vod')
-export class VodController {
+@Controller('video')
+export class VideoController {
   constructor(@InjectModel(Video.name) private readonly model: Model<Video>) {}
 }

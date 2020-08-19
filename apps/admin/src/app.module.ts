@@ -5,7 +5,7 @@ import { CommonModule } from '@libs/common';
 import { AuthModule } from './modules/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { ArticleModule } from './modules/article/article.module';
-import { VodModule } from './modules/vod/vod.module';
+import { VideoModule } from './modules/video/video.module';
 import { UserModule } from './modules/user/user.module';
 import { TypeModule } from './modules/type/type.module';
 import { GroupModule } from './modules/group/group.module';
@@ -18,7 +18,7 @@ import { RolesGuard } from './guard/roles.guard';
     CommonModule,
     AuthModule,
     ArticleModule,
-    VodModule,
+    VideoModule,
     SettingModule,
     UserModule,
     TypeModule,
