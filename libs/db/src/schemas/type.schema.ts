@@ -1,18 +1,24 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, SchemaTypes } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
 // 分类表
-@Schema()
+@Schema({
+  toJSON: { virtuals: true },
+})
 export class Type extends Document {
   @ApiProperty({ description: '所属用户组' })
   @Prop({
-    type: [String],
+    type: [
+      {
+        type: SchemaTypes.ObjectId,
+      },
+    ],
   })
-  group_id: string[];
+  group_ids: string[];
   @ApiProperty({ description: '分类类型1影片,2文章' })
   @Prop({
-    type: Number,
+    type: SchemaTypes.Number,
     index: true,
     required: true,
     enum: [1, 2],
@@ -20,51 +26,56 @@ export class Type extends Document {
   type_mid: number;
   @ApiProperty({ description: '分类名称' })
   @Prop({
-    type: String,
+    type: SchemaTypes.String,
     required: true,
     unique: true,
   })
   type_name: string;
   @ApiProperty({ description: '别名' })
   @Prop({
-    type: String,
+    type: SchemaTypes.String,
   })
   type_en: string;
   @ApiProperty({ description: '排序' })
   @Prop({
-    type: Number,
+    type: SchemaTypes.Number,
     default: 0,
   })
   type_sort: number;
   @ApiProperty({ description: '父级分类id 0表示一级分类' })
   @Prop({
-    type: String,
+    type: SchemaTypes.String,
     default: '',
   })
   type_pid: string;
   @ApiProperty({ description: '分类状态' })
   @Prop({
-    type: Boolean,
+    type: SchemaTypes.Boolean,
     default: true,
   })
   type_status: boolean;
   @ApiProperty({ description: '分类图标' })
   @Prop({
-    type: String,
+    type: SchemaTypes.String,
   })
   type_logo: string;
   @ApiProperty({ description: '分类封面' })
   @Prop({
-    type: String,
+    type: SchemaTypes.String,
   })
   type_pic: string;
   @ApiProperty({ description: '扩展信息' })
   @Prop({
-    type: String,
+    type: SchemaTypes.String,
   })
   type_extend: string;
 }
 
 export const TypeSchema = SchemaFactory.createForClass(Type);
-export const TypeDocName =
-  process.env.DATABASE_PREFIX + '_' + Type.name.toLowerCase();
+TypeSchema.virtual('children', {
+  ref: Type.name,
+  localField: '_id',
+  foreignField: 'type_pid',
+});
+
+export const TypeDocName = 'qy' + '_' + Type.name.toLowerCase();

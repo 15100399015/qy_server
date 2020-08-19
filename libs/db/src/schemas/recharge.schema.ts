@@ -60,5 +60,4 @@ export class Recharge extends Document {
 }
 
 export const RechargeSchema = SchemaFactory.createForClass(Recharge);
-export const RechargeDocName =
-  process.env.DATABASE_PREFIX + '_' + Recharge.name.toLowerCase();
+export const RechargeDocName = 'qy' + '_' + Recharge.name.toLowerCase();

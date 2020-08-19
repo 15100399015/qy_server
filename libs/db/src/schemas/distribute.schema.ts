@@ -51,5 +51,4 @@ export class Distribute extends Document {
 }
 
 export const DistributeSchema = SchemaFactory.createForClass(Distribute);
-export const DistributeDocName =
-  process.env.DATABASE_PREFIX + '_' + Distribute.name.toLowerCase();
+export const DistributeDocName = 'qy' + '_' + Distribute.name.toLowerCase();

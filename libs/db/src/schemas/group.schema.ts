@@ -63,5 +63,4 @@ export class Group extends Document {
 }
 
 export const GroupSchema = SchemaFactory.createForClass(Group);
-export const GroupDocName =
-  process.env.DATABASE_PREFIX + '_' + Group.name.toLowerCase();
+export const GroupDocName = 'qy' + '_' + Group.name.toLowerCase();

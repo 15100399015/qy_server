@@ -132,5 +132,4 @@ export class User extends Document {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-export const UserDocName =
-  process.env.DATABASE_PREFIX + '_' + User.name.toLowerCase();
+export const UserDocName = 'qy' + '_' + User.name.toLowerCase();
