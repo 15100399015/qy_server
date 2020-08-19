@@ -16,7 +16,6 @@ import { Model } from 'mongoose';
 import { Roles } from '@admin/decorator/roles.decorator';
 import { TypeService } from './type.service';
 
-
 @ApiTags('分类')
 @Controller('type')
 export class TypeController {
@@ -27,11 +26,6 @@ export class TypeController {
   // 无条件获取所有信息
   @Get('findAll')
   finAll() {
-    return this.model.find().exec();
-  }
-  // 条件获取
-  @Get('find')
-  find() {
     // 填充用户权限组信息
     const typeList = this.model
       .find({
