@@ -1,36 +1,51 @@
 import { MongooseModule } from '@nestjs/mongoose';
-
-import { Video, VideoSchema, VideoDocName } from '../../schemas/video.schema';
-import { User, UserSchema, UserDocName } from '../../schemas/user.schema';
-import { Type, TypeSchema, TypeDocName } from '../../schemas/type.schema';
-import { Topic, TopicSchema, TopicDocName } from '../../schemas/topic.schema';
-import { Gbook, GbookSchema, GbookDocName } from '../../schemas/gbook.schema';
 import {
+  Video,
+  VideoSchema,
+  VideoDocName,
+  User,
+  UserSchema,
+  UserDocName,
+  Type,
+  TypeSchema,
+  TypeDocName,
+  Topic,
+  TopicSchema,
+  TopicDocName,
+  Gbook,
+  GbookSchema,
+  GbookDocName,
   Article,
   ArticleSchema,
   ArticleDocName,
-} from '../../schemas/article.schema';
-import { Admin, AdminSchema, AdminDocName } from '../../schemas/admin.schema';
-import { Actor, ActorSchema, ActorDocName } from '../../schemas/actor.schema';
-import { Group, GroupSchema, GroupDocName } from '../../schemas/group.schema';
-import {
+  Admin,
+  AdminSchema,
+  AdminDocName,
+  Actor,
+  ActorSchema,
+  ActorDocName,
+  Group,
+  GroupSchema,
+  GroupDocName,
   Comment,
   CommentSchema,
   CommentDocName,
-} from '../../schemas/comment.schema';
-import { Uact, UactSchema, UactDocName } from '../../schemas/uact.schema';
-import { Plog, PlogSchema, PlogDocName } from '../../schemas/plog.schema';
-import {
+  Uact,
+  UactSchema,
+  UactDocName,
+  Plog,
+  PlogSchema,
+  PlogDocName,
   Recharge,
   RechargeSchema,
   RechargeDocName,
-} from '../../schemas/recharge.schema';
-import {
   Distribute,
   DistributeSchema,
   DistributeDocName,
-} from '../../schemas/distribute.schema';
-import { Mag, MagSchema, MagDocName } from '../../schemas/msg.schema';
+  Mag,
+  MagSchema,
+  MagDocName,
+} from '../../schemas';
 
 function useFactory(schema) {
   return schema;
