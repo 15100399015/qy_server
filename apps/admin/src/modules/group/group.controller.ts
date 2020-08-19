@@ -27,9 +27,9 @@ export class GroupController {
   @Delete('delete/:id')
   @Roles('admin')
   async delete(@Param('id') id) {
-    const s = await this.groupService.inspect(id);
-    if (s !== true) {
-      throw new ForbiddenException(`请先清除${s}模块下的属于该组的内容`);
+    const testBind = await this.groupService.inspect(id);
+    if (testBind !== true) {
+      throw new ForbiddenException(`请先清除${testBind}模块下的属于该组的内容`);
     }
     return this.model.findByIdAndDelete(id).exec();
   }

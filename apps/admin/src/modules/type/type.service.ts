@@ -39,15 +39,8 @@ export class TypeService {
   }
   // 传入多个id 检查每个id 是否有子分类
   async inspectsChildren(_idArr: string[]) {
-    const resNum = await this.TypeModel.find({
+    return await this.TypeModel.findOne({
       type_pid: { $in: _idArr },
-    })
-      .count()
-      .exec();
-    if (_idArr.length === resNum) {
-      return true;
-    } else {
-      return false;
-    }
+    });
   }
 }

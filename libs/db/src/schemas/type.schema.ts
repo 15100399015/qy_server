@@ -6,15 +6,6 @@ import { ApiProperty } from '@nestjs/swagger';
   toJSON: { virtuals: true },
 })
 export class Type extends Document {
-  @ApiProperty({ description: '所属用户组,id数组' })
-  @Prop({
-    type: [
-      {
-        type: SchemaTypes.ObjectId,
-      },
-    ],
-  })
-  group_ids: string[];
   @ApiProperty({ description: '分类类型1影片,2文章' })
   @Prop({
     type: SchemaTypes.Number,
@@ -53,6 +44,15 @@ export class Type extends Document {
     default: true,
   })
   type_status: boolean;
+  @ApiProperty({ description: '所属用户组,id数组' })
+  @Prop({
+    type: [
+      {
+        type: SchemaTypes.ObjectId,
+      },
+    ],
+  })
+  group_ids: string[];
   @ApiProperty({ description: '分类图标' })
   @Prop({
     type: SchemaTypes.String,
@@ -71,14 +71,26 @@ export class Type extends Document {
 }
 
 export const TypeSchema = SchemaFactory.createForClass(Type);
+// 子分类
 TypeSchema.virtual('children', {
   ref: Type.name,
   localField: '_id',
   foreignField: 'type_pid',
 });
+// 分类类型
 TypeSchema.virtual('type_mold').get(function (this: Type) {
-  if (this.type_mid === 1) return '视频';
-  if (this.type_mid === 2) return '文章';
+  if (this.type_mid === 1) {
+    return {
+      name: '视频',
+      type_mid: this.type_mid,
+    };
+  }
+  if (this.type_mid === 2) {
+    return {
+      name: '文章',
+      type_mid: this.type_mid,
+    };
+  }
   return this.type_mid;
 });
 

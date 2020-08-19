@@ -14,21 +14,11 @@ export class GroupService {
   ) {}
   async inspect(group_id) {
     const rule = { group_id };
-    if (await this.typeModel.findOne(rule)) {
-      return Promise.resolve('分类');
-    }
-    if (await this.videoModel.findOne(rule)) {
-      return Promise.resolve('视频');
-    }
-    if (await this.userModel.findOne(rule)) {
-      return Promise.resolve('用户');
-    }
-    if (await this.articleModel.findOne(rule)) {
-      return Promise.resolve('文章');
-    }
-    if (await this.topicModel.findOne(rule)) {
-      return Promise.resolve('专辑');
-    }
-    return Promise.resolve(true);
+    if (await this.typeModel.findOne(rule)) return '分类';
+    if (await this.videoModel.findOne(rule)) return '视频';
+    if (await this.userModel.findOne(rule)) return '用户';
+    if (await this.articleModel.findOne(rule)) return '文章';
+    if (await this.topicModel.findOne(rule)) return '专辑';
+    return true;
   }
 }
