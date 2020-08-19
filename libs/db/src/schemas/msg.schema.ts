@@ -52,3 +52,5 @@ export class Mag extends Document {
 }
 
 export const MagSchema = SchemaFactory.createForClass(Mag);
+export const MagDocName =
+  process.env.DATABASE_PREFIX + '_' + Mag.name.toLowerCase();

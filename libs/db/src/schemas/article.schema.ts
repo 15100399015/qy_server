@@ -203,3 +203,5 @@ export class Article extends Document {
 }
 
 export const ArticleSchema = SchemaFactory.createForClass(Article);
+export const ArticleDocName =
+  process.env.DATABASE_PREFIX + '_' + Article.name.toLowerCase();

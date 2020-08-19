@@ -77,3 +77,5 @@ export class Comment extends Document {
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
+export const CommentDocName =
+  process.env.DATABASE_PREFIX + '_' + Comment.name.toLowerCase();

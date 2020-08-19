@@ -156,3 +156,5 @@ export class Actor extends Document {
 }
 
 export const ActorSchema = SchemaFactory.createForClass(Actor);
+export const ActorDocName =
+  process.env.DATABASE_PREFIX + '_' + Actor.name.toLowerCase();

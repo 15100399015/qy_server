@@ -417,3 +417,5 @@ export class Video extends Document {
 }
 
 export const VideoSchema = SchemaFactory.createForClass(Video);
+export const VideoDocName =
+  process.env.DATABASE_PREFIX + '_' + Video.name.toLowerCase();

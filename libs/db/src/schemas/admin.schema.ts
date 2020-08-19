@@ -69,3 +69,5 @@ export class Admin extends Document {
 }
 
 export const AdminSchema = SchemaFactory.createForClass(Admin);
+export const AdminDocName =
+  process.env.DATABASE_PREFIX + '_' + Admin.name.toLowerCase();

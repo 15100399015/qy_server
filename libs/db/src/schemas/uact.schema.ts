@@ -41,3 +41,5 @@ export class Uact extends Document {
 }
 
 export const UactSchema = SchemaFactory.createForClass(Uact);
+export const UactDocName =
+  process.env.DATABASE_PREFIX + '_' + Uact.name.toLowerCase();

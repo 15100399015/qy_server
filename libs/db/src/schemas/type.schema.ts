@@ -66,3 +66,5 @@ export class Type extends Document {
 }
 
 export const TypeSchema = SchemaFactory.createForClass(Type);
+export const TypeDocName =
+  process.env.DATABASE_PREFIX + '_' + Type.name.toLowerCase();

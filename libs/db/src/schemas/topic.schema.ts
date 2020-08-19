@@ -164,3 +164,5 @@ export class Topic extends Document {
 }
 
 export const TopicSchema = SchemaFactory.createForClass(Topic);
+export const TopicDocName =
+  process.env.DATABASE_PREFIX + '_' + Topic.name.toLowerCase();

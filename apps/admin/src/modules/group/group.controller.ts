@@ -24,8 +24,8 @@ export class GroupController {
     @InjectModel(Group.name) private readonly model: Model<Group>,
     private readonly groupService: GroupService,
   ) {}
-
   @Delete('delete/:id')
+  @Roles('admin')
   async delete(@Param('id') id) {
     const s = await this.groupService.inspect(id);
     if (s !== true) {
