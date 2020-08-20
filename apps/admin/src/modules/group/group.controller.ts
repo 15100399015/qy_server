@@ -8,12 +8,13 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Group } from '@libs/db/schemas';
+import { Group, GroupDocName } from '@libs/db/schemas';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Crud } from '@admin/decorator/crud';
 import { Roles } from '@admin/decorator/roles.decorator';
 import { GroupService } from './group.service';
+import { VerificationService } from '@admin/service/verification.service';
 
 @ApiTags('权限组')
 @Crud({
@@ -29,6 +30,7 @@ export class GroupController {
   constructor(
     @InjectModel(Group.name) private readonly model: Model<Group>,
     private readonly groupService: GroupService,
+    private readonly verificationService: VerificationService,
   ) {}
 
   @Post('create')
@@ -37,7 +39,13 @@ export class GroupController {
     if (group_name === undefined || group_name === '') {
       throw new ForbiddenException('组名称必填');
     }
-    if (await this.groupService.inspectGroupByName(group_name)) {
+    if (
+      await this.verificationService.testOneExist(
+        GroupDocName,
+        'group_name',
+        group_name,
+      )
+    ) {
       throw new ForbiddenException('组名称重复');
     }
     return this.model.create(doc);
@@ -63,8 +71,10 @@ export class GroupController {
   @Roles('admin')
   @Put('changStatus/:id')
   async changStatus(@Param('id') id: string, @Body() body) {
-    if (!(await this.groupService.inspectGroupById(id))) {
-      throw new ForbiddenException('分类不存在');
+    if (
+      !(await this.verificationService.testOneExist(GroupDocName, '_id', id))
+    ) {
+      throw new ForbiddenException('权限组不存在');
     }
     return this.model.findByIdAndUpdate(id, {
       group_status: body.status,
