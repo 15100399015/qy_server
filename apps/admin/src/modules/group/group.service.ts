@@ -21,10 +21,4 @@ export class GroupService {
     if (await this.topicModel.findOne(rule)) return '专辑';
     return true;
   }
-  async inspectGroupByName(group_name: string) {
-    return await this.groupModel.findOne({ group_name });
-  }
-  async inspectGroupById(id: string) {
-    return await this.groupModel.findById(id);
-  }
 }
