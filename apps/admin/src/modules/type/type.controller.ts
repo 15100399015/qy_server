@@ -67,39 +67,36 @@ export class TypeController {
   @Post('create')
   async create(@Body() doc: Type) {
     const { group_ids, type_pid, type_name } = doc;
+    const findNameRes = await this.verificationService.testOneExist(
+      Type.name,
+      'type_name',
+      type_name,
+    );
+    const findPIdRes = await this.verificationService.testOneExist(
+      Type.name,
+      '_id',
+      type_pid,
+    );
+    const findGroupRes = await this.verificationService.testAllExist(
+      Group.name,
+      '_id',
+      group_ids,
+    );
+    // 检查分类名是否存在
     if (type_name === '' || type_name === undefined) {
       throw new BadRequestException('分类名必须');
     }
-    if (
-      await this.verificationService.testOneExist(
-        Type.name,
-        'type_name',
-        type_name,
-      )
-    ) {
+    // 检查分类名是否重复
+    if (findNameRes) {
       throw new ForbiddenException('分类名称重复');
     }
-    if (type_pid !== undefined && type_pid !== '') {
-      if (
-        !(await this.verificationService.testOneExist(
-          Type.name,
-          '_id',
-          type_pid,
-        ))
-      ) {
-        throw new ForbiddenException('顶级分类不存在');
-      }
+    // 父分类是否存在
+    if (type_pid !== undefined && type_pid !== '' && !findPIdRes) {
+      throw new ForbiddenException('顶级分类不存在');
     }
-    if (group_ids !== undefined && group_ids.length !== 0) {
-      if (
-        !(await this.verificationService.testAllExist(
-          Group.name,
-          '_id',
-          group_ids,
-        ))
-      ) {
-        throw new ForbiddenException('某些权限组不存在');
-      }
+    // 检查权限组是否存在
+    if (group_ids !== undefined && group_ids.length !== 0 && !findGroupRes) {
+      throw new ForbiddenException('某些权限组不存在');
     }
     return this.model.create(doc).catch(() => {
       throw new InternalServerErrorException('服务器内部错误');
@@ -142,7 +139,7 @@ export class TypeController {
       throw new ForbiddenException('分类名重复');
     }
     // 父分类是否存在
-    if (!findPIdRes) {
+    if (type_pid !== undefined && type_pid !== '' && !findPIdRes) {
       throw new ForbiddenException('顶级分类不存在');
     }
     // 检查父分类是否是二级分类
@@ -150,7 +147,7 @@ export class TypeController {
       throw new ForbiddenException('不能选择子分类作为顶级分类');
     }
     // 检查权限组是否全部存在
-    if (group_ids.length !== 0 && findGroupRes) {
+    if (group_ids !== undefined && group_ids.length !== 0 && !findGroupRes) {
       throw new ForbiddenException('某些权限组不存在');
     }
     // 是否把自己当作自己的父分类
