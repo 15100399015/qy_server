@@ -8,6 +8,7 @@ import {
   Body,
   Get,
   BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Type, Group } from '@libs/db/schemas';
@@ -15,12 +16,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Roles } from '@admin/decorator/roles.decorator';
 import { TypeService } from './type.service';
+import { VerificationService } from '@admin/service/verification.service';
 
 @ApiTags('分类')
 @Controller('type')
 export class TypeController {
   constructor(
     private readonly typeService: TypeService,
+    private readonly verificationService: VerificationService,
     @InjectModel(Type.name) private readonly model: Model<Type>,
   ) {}
   @Roles('admin')
@@ -67,68 +70,142 @@ export class TypeController {
     if (type_name === '' || type_name === undefined) {
       throw new BadRequestException('分类名必须');
     }
-    if (await this.typeService.inspectTypeByName(type_name)) {
+    if (
+      await this.verificationService.testOneExist(
+        Type.name,
+        'type_name',
+        type_name,
+      )
+    ) {
       throw new ForbiddenException('分类名称重复');
     }
-    if (type_pid !== '' && type_pid !== undefined) {
-      if (!(await this.typeService.inspectTypeById(type_pid))) {
+    if (type_pid !== undefined && type_pid !== '') {
+      if (
+        !(await this.verificationService.testOneExist(
+          Type.name,
+          '_id',
+          type_pid,
+        ))
+      ) {
         throw new ForbiddenException('顶级分类不存在');
       }
     }
     if (group_ids !== undefined && group_ids.length !== 0) {
-      if (!(await this.typeService.inspectGroupById(group_ids))) {
+      if (
+        !(await this.verificationService.testAllExist(
+          Group.name,
+          '_id',
+          group_ids,
+        ))
+      ) {
         throw new ForbiddenException('某些权限组不存在');
       }
     }
-    return this.model.create(doc);
+    return this.model.create(doc).catch(() => {
+      throw new InternalServerErrorException('服务器内部错误');
+    });
   }
   @Roles('admin')
   @Put('update/:id')
   async update(@Body() doc: Type, @Param('id') id: string) {
     const { group_ids, type_pid, type_name } = doc;
-    if (type_name === '' || type_name === undefined) {
+    const findNameRes = await this.verificationService.testOneExist(
+      Type.name,
+      'type_name',
+      type_name,
+    );
+    const findPIdRes = await this.verificationService.testOneExist(
+      Type.name,
+      '_id',
+      type_pid,
+    );
+    const findIdRes = await this.verificationService.testOneExist(
+      Type.name,
+      '_id',
+      id,
+    );
+    const findGroupRes = await this.verificationService.testAllExist(
+      Group.name,
+      '_id',
+      group_ids,
+    );
+    // 检查分类名是否存在
+    if (type_name === undefined && type_name === '') {
       throw new BadRequestException('分类名必须');
     }
-    if (await this.typeService.inspectTypeByName(type_name)) {
-      throw new ForbiddenException('分类名称重复');
+    // 检查是否需要更新
+    if (Object.keys(doc).every((item) => doc[item] === findNameRes[item])) {
+      throw new ForbiddenException('无需更新');
     }
-    if (type_pid !== '' && type_pid !== undefined) {
-      if (!(await this.typeService.inspectTypeByName(type_pid))) {
-        throw new ForbiddenException('顶级分类不存在');
-      }
+    // 检查分类名是否重复
+    if (findNameRes && String(id) !== String(findNameRes._id)) {
+      throw new ForbiddenException('分类名重复');
     }
-    if (group_ids !== undefined && group_ids.length !== 0) {
-      if (!(await this.typeService.inspectGroupById(group_ids))) {
-        throw new ForbiddenException('某些权限组不存在');
-      }
+    // 父分类是否存在
+    if (!findPIdRes) {
+      throw new ForbiddenException('顶级分类不存在');
     }
-    return this.model.findByIdAndUpdate(id, doc).exec();
+    // 检查父分类是否是二级分类
+    if (findPIdRes.type_pid !== '') {
+      throw new ForbiddenException('不能选择子分类作为顶级分类');
+    }
+    // 检查权限组是否全部存在
+    if (group_ids.length !== 0 && findGroupRes) {
+      throw new ForbiddenException('某些权限组不存在');
+    }
+    // 是否把自己当作自己的父分类
+    if (String(type_pid) === String(findIdRes._id)) {
+      throw new ForbiddenException('父分类不能选择自己');
+    }
+    // return this.model
+    //   .findByIdAndUpdate(id, doc)
+    //   .exec()
+    //   .catch(() => {
+    //     throw new InternalServerErrorException('服务器内部错误');
+    //   });
   }
   // 更新状态
   @Roles('admin')
   @Put('changStatus/:id')
   async changStatus(@Param('id') id: string, @Body() body) {
-    if (!(await this.typeService.inspectTypeById(id))) {
+    if (!(await this.verificationService.testOneExist(Type.name, '_id', id))) {
       throw new ForbiddenException('分类不存在');
     }
-    return this.model.findByIdAndUpdate(id, {
-      type_status: body.status,
-    });
+    return this.model
+      .findByIdAndUpdate(id, {
+        type_status: body.status,
+      })
+      .catch(() => {
+        throw new InternalServerErrorException('服务器内部错误');
+      });
   }
   // 删除
   @Roles('admin')
   @Delete('delete/:id')
   async delete(@Param('id') id: string) {
-    if (await this.typeService.inspectChildren(id)) {
+    if (
+      await this.verificationService.testOneExist(Type.name, 'type_pid', id)
+    ) {
       throw new ForbiddenException('请先清理子分类');
     }
-    return this.model.findByIdAndDelete(id).exec();
+    return this.model
+      .findByIdAndDelete(id)
+      .exec()
+      .catch(() => {
+        throw new InternalServerErrorException('服务器内部错误');
+      });
   }
   // 删除多个
   @Roles('admin')
   @Delete('deleteMany')
   async deleteMany(@Body() _idArr: string[]) {
-    if (await this.typeService.inspectsChildren(_idArr)) {
+    if (
+      await this.verificationService.testInOneExists(
+        Type.name,
+        'type_pid',
+        _idArr,
+      )
+    ) {
       throw new ForbiddenException('请先清理子分类');
     }
     return this.model

@@ -14,7 +14,7 @@ export class VerificationService {
       .findOne({
         [key]: val,
       })
-      .then((res) => res);
+      .exec();
   }
   // 检查是否全部存在
   async testAllExist(callName: string, key: string, valArr: any[]) {
@@ -25,8 +25,10 @@ export class VerificationService {
       .count()
       .exec();
     if (resNum === valArr.length) {
+      // 全部存在
       return true;
     } else {
+      // 不是全部存在
       return false;
     }
   }
