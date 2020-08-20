@@ -88,7 +88,7 @@ export class TypeController {
     if (group_ids !== undefined && group_ids.length !== 0 && !findGroupRes) {
       throw new ForbiddenException('某些权限组不存在');
     }
-    // 父分类在有子分类的情况下不能进行转移
+    // 子分类和父分类类型必须统一
     if (findPIdRes !== false && type_mid !== findPIdRes.type_mid) {
       throw new ForbiddenException('子分类类型必须和父分类类型相同');
     }
@@ -151,7 +151,7 @@ export class TypeController {
     if (group_ids !== undefined && group_ids.length !== 0 && !findGroupRes) {
       throw new ForbiddenException('某些权限组不存在');
     }
-    // 是否把自己当作自己的父分类
+    // 不能把自己当作自己的父分类
     if (String(type_pid) === String(findIdRes._id)) {
       throw new ForbiddenException('父分类不能选择自己');
     }
@@ -159,7 +159,7 @@ export class TypeController {
     if (findIdRes.type_pid !== type_pid && findSubTypeRes) {
       throw new ForbiddenException('请先清理子分类');
     }
-    // 父分类在有子分类的情况下不能进行转移
+    // 分类被创建之后分类类型是不能被更改的
     if (findIdRes.type_mid !== type_mid) {
       throw new ForbiddenException('分类创建之后，分类类型不可更改');
     }
@@ -195,12 +195,12 @@ export class TypeController {
   @Roles('admin')
   @Delete('delete/:id')
   async delete(@Param('id') id: string) {
-    const findPidfromId = await this.verificationService.testOneExist(
+    const findSubTypeRes = await this.verificationService.testOneExist(
       Type.name,
       'type_pid',
       id,
     );
-    if (findPidfromId) {
+    if (findSubTypeRes) {
       throw new ForbiddenException('请先清理子分类');
     }
     return this.model
@@ -214,12 +214,12 @@ export class TypeController {
   @Roles('admin')
   @Delete('deleteMany')
   async deleteMany(@Body() _idArr: string[]) {
-    const findPidinArrRes = await this.verificationService.testInOneExists(
+    const findSubTypeRes = await this.verificationService.testInOneExists(
       Type.name,
       'type_pid',
       _idArr,
     );
-    if (findPidinArrRes) {
+    if (findSubTypeRes) {
       throw new ForbiddenException('请先清理子分类');
     }
     return this.model
