@@ -66,17 +66,15 @@ export class TypeController {
   @Roles('admin')
   @Post('create')
   async create(@Body() doc: Type) {
-    const { group_ids, type_pid, type_name } = doc;
+    const { group_ids, type_pid, type_name, type_mid } = doc;
     const findNameRes = await this.verificationService.testOneExist(
       Type.name,
       'type_name',
       type_name,
     );
-    const findPIdRes = await this.verificationService.testOneExist(
-      Type.name,
-      '_id',
-      type_pid,
-    );
+    const findPIdRes = !!type_pid
+      ? await this.verificationService.testOneExist(Type.name, '_id', type_pid)
+      : false;
     const findGroupRes = await this.verificationService.testAllExist(
       Group.name,
       '_id',
@@ -98,6 +96,11 @@ export class TypeController {
     if (group_ids !== undefined && group_ids.length !== 0 && !findGroupRes) {
       throw new ForbiddenException('某些权限组不存在');
     }
+    // 父分类在有子分类的情况下不能进行转移
+    if (findPIdRes !== false && findPIdRes.type_mid !== type_mid) {
+      throw new ForbiddenException('子分类类型必须和父分类类型相同');
+    }
+    // 创建
     return this.model.create(doc).catch(() => {
       throw new InternalServerErrorException('服务器内部错误');
     });
@@ -105,17 +108,15 @@ export class TypeController {
   @Roles('admin')
   @Put('update/:id')
   async update(@Body() doc: Type, @Param('id') id: string) {
-    const { group_ids, type_pid, type_name } = doc;
+    const { group_ids, type_pid, type_name, type_mid } = doc;
     const findNameRes = await this.verificationService.testOneExist(
       Type.name,
       'type_name',
       type_name,
     );
-    const findPIdRes = await this.verificationService.testOneExist(
-      Type.name,
-      '_id',
-      type_pid,
-    );
+    const findPIdRes = !!type_pid
+      ? await this.verificationService.testOneExist(Type.name, '_id', type_pid)
+      : false;
     const findIdRes = await this.verificationService.testOneExist(
       Type.name,
       '_id',
@@ -131,7 +132,11 @@ export class TypeController {
       throw new BadRequestException('分类名必须');
     }
     // 检查是否需要更新
-    if (Object.keys(doc).every((item) => doc[item] === findNameRes[item])) {
+    if (
+      Object.keys(doc).every(
+        (item) => doc[item].toString() === findIdRes[item].toString(),
+      )
+    ) {
       throw new ForbiddenException('无需更新');
     }
     // 检查分类名是否重复
@@ -143,7 +148,7 @@ export class TypeController {
       throw new ForbiddenException('顶级分类不存在');
     }
     // 检查父分类是否是二级分类
-    if (findPIdRes.type_pid !== '') {
+    if (findPIdRes !== false && findPIdRes.type_pid !== '') {
       throw new ForbiddenException('不能选择子分类作为顶级分类');
     }
     // 检查权限组是否全部存在
@@ -153,6 +158,14 @@ export class TypeController {
     // 是否把自己当作自己的父分类
     if (String(type_pid) === String(findIdRes._id)) {
       throw new ForbiddenException('父分类不能选择自己');
+    }
+    // 父分类在有子分类的情况下不能进行转移
+    if (type_pid !== '' && findIdRes.type_pid === '') {
+      throw new ForbiddenException('请先清理子分类');
+    }
+    // 父分类在有子分类的情况下不能进行转移
+    if (findIdRes.type_mid !== type_mid) {
+      throw new ForbiddenException('分类创建之后，分类类型不可更改');
     }
     return this.model
       .findByIdAndUpdate(id, doc)
