@@ -157,18 +157,24 @@ export class TypeController {
     if (String(type_pid) === String(findIdRes._id)) {
       throw new ForbiddenException('父分类不能选择自己');
     }
-    // return this.model
-    //   .findByIdAndUpdate(id, doc)
-    //   .exec()
-    //   .catch(() => {
-    //     throw new InternalServerErrorException('服务器内部错误');
-    //   });
+    return this.model
+      .findByIdAndUpdate(id, doc)
+      .exec()
+      .catch(() => {
+        throw new InternalServerErrorException('服务器内部错误');
+      });
   }
   // 更新状态
   @Roles('admin')
   @Put('changStatus/:id')
   async changStatus(@Param('id') id: string, @Body() body) {
-    if (!(await this.verificationService.testOneExist(Type.name, '_id', id))) {
+    const findIdRes = await this.verificationService.testOneExist(
+      Type.name,
+      '_id',
+      id,
+    );
+    // 如果不存在
+    if (!findIdRes) {
       throw new ForbiddenException('分类不存在');
     }
     return this.model
