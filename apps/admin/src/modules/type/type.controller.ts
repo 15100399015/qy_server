@@ -45,14 +45,6 @@ export class TypeController {
       .find({
         type_pid: '',
       })
-      .populate(
-        'group_ids',
-        {
-          group_name: true,
-          group_color: true,
-        },
-        Group.name,
-      )
       .populate('children')
       .exec();
   }
@@ -97,10 +89,9 @@ export class TypeController {
       throw new ForbiddenException('某些权限组不存在');
     }
     // 父分类在有子分类的情况下不能进行转移
-    if (findPIdRes !== false && findPIdRes.type_mid !== type_mid) {
+    if (findPIdRes !== false && type_mid !== findPIdRes.type_mid) {
       throw new ForbiddenException('子分类类型必须和父分类类型相同');
     }
-    // 创建
     return this.model.create(doc).catch(() => {
       throw new InternalServerErrorException('服务器内部错误');
     });
@@ -113,6 +104,11 @@ export class TypeController {
       Type.name,
       'type_name',
       type_name,
+    );
+    const findSubTypeRes = await this.verificationService.testOneExist(
+      Type.name,
+      'type_pid',
+      id,
     );
     const findPIdRes = !!type_pid
       ? await this.verificationService.testOneExist(Type.name, '_id', type_pid)
@@ -160,7 +156,7 @@ export class TypeController {
       throw new ForbiddenException('父分类不能选择自己');
     }
     // 父分类在有子分类的情况下不能进行转移
-    if (type_pid !== '' && findIdRes.type_pid === '') {
+    if (findIdRes.type_pid !== type_pid && findSubTypeRes) {
       throw new ForbiddenException('请先清理子分类');
     }
     // 父分类在有子分类的情况下不能进行转移
@@ -199,9 +195,12 @@ export class TypeController {
   @Roles('admin')
   @Delete('delete/:id')
   async delete(@Param('id') id: string) {
-    if (
-      await this.verificationService.testOneExist(Type.name, 'type_pid', id)
-    ) {
+    const findPidfromId = await this.verificationService.testOneExist(
+      Type.name,
+      'type_pid',
+      id,
+    );
+    if (findPidfromId) {
       throw new ForbiddenException('请先清理子分类');
     }
     return this.model
@@ -215,13 +214,12 @@ export class TypeController {
   @Roles('admin')
   @Delete('deleteMany')
   async deleteMany(@Body() _idArr: string[]) {
-    if (
-      await this.verificationService.testInOneExists(
-        Type.name,
-        'type_pid',
-        _idArr,
-      )
-    ) {
+    const findPidinArrRes = await this.verificationService.testInOneExists(
+      Type.name,
+      'type_pid',
+      _idArr,
+    );
+    if (findPidinArrRes) {
       throw new ForbiddenException('请先清理子分类');
     }
     return this.model

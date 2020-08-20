@@ -39,13 +39,12 @@ export class GroupController {
     if (group_name === undefined || group_name === '') {
       throw new ForbiddenException('组名称必填');
     }
-    if (
-      await this.verificationService.testOneExist(
-        Group.name,
-        'group_name',
-        group_name,
-      )
-    ) {
+    const findNameRes = await this.verificationService.testOneExist(
+      Group.name,
+      'group_name',
+      group_name,
+    );
+    if (findNameRes) {
       throw new ForbiddenException('组名称重复');
     }
     return this.model.create(doc).catch(() => {
@@ -60,16 +59,20 @@ export class GroupController {
       throw new ForbiddenException('组名称必填');
     }
     // 查现有数据
-    const testRes = await this.verificationService.testOneExist(
+    const findNameRes = await this.verificationService.testOneExist(
       Group.name,
       'group_name',
       group_name,
     );
-    if (testRes) {
-      if (String(id) !== String(testRes._id)) {
+    if (findNameRes) {
+      if (String(id) !== String(findNameRes._id)) {
         throw new ForbiddenException('组名称重复');
       }
-      if (Object.keys(doc).every((item) => doc[item] === testRes[item])) {
+      if (
+        Object.keys(doc).every(
+          (item) => doc[item].toString() === findNameRes[item].toString(),
+        )
+      ) {
         throw new ForbiddenException('无需更新');
       }
     }
@@ -97,7 +100,12 @@ export class GroupController {
   @Roles('admin')
   @Put('changStatus/:id')
   async changStatus(@Param('id') id: string, @Body() body) {
-    if (!(await this.verificationService.testOneExist(Group.name, '_id', id))) {
+    const findIdRes = await this.verificationService.testOneExist(
+      Group.name,
+      '_id',
+      id,
+    );
+    if (!findIdRes) {
       throw new ForbiddenException('权限组不存在');
     }
     return this.model

@@ -11,7 +11,6 @@ import { TypeModule } from './modules/type/type.module';
 import { GroupModule } from './modules/group/group.module';
 import { SettingModule } from './modules/setting/setting.module';
 import { RolesGuard } from './guard/roles.guard';
-import { VerificationService } from './service/verification.service';
 @Module({
   imports: [
     UploadModule,
