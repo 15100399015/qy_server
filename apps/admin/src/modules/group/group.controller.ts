@@ -59,17 +59,18 @@ export class GroupController {
     if (group_name === undefined || group_name === '') {
       throw new ForbiddenException('组名称必填');
     }
+    // 查现有数据
     const testRes = await this.verificationService.testOneExist(
       Group.name,
       'group_name',
       group_name,
     );
     if (testRes) {
-      if (Object.keys(doc).every((item) => doc[item] === testRes[item])) {
-        throw new ForbiddenException('无需更新');
-      }
       if (String(id) !== String(testRes._id)) {
         throw new ForbiddenException('组名称重复');
+      }
+      if (Object.keys(doc).every((item) => doc[item] === testRes[item])) {
+        throw new ForbiddenException('无需更新');
       }
     }
     return this.model
