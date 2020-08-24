@@ -37,4 +37,4 @@ export class Plog extends Document {
 }
 
 export const PlogSchema = SchemaFactory.createForClass(Plog);
-export const PlogDocName = 'qy' + '_' + Plog.name.toLowerCase();
+export const PlogDocName = 'qy_' + Plog.name.toLowerCase();

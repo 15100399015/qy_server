@@ -17,6 +17,7 @@ import { Model } from 'mongoose';
 import { Roles } from '@admin/decorator/roles.decorator';
 import { TypeService } from './type.service';
 import { VerificationService } from '@admin/service/verification.service';
+import { VerifyDtoPipe } from '@admin/pipe/verify.dto.pipe';
 
 @ApiTags('分类')
 @Controller('type')
@@ -51,7 +52,7 @@ export class TypeController {
   // 根据id获取单个文档
   @Roles('admin')
   @Get('findOne/:id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param(new VerifyDtoPipe('ObjectId', 'id')) id: string) {
     return this.model.findById(id).exec();
   }
   // 创建一条信息
@@ -98,7 +99,10 @@ export class TypeController {
   }
   @Roles('admin')
   @Put('update/:id')
-  async update(@Body() doc: Type, @Param('id') id: string) {
+  async update(
+    @Body() doc: Type,
+    @Param(new VerifyDtoPipe('ObjectId', 'id')) id: string,
+  ) {
     const { group_ids, type_pid, type_name, type_mid } = doc;
     const findNameRes = await this.verificationService.testOneExist(
       Type.name,
@@ -173,7 +177,10 @@ export class TypeController {
   // 更新状态
   @Roles('admin')
   @Put('changStatus/:id')
-  async changStatus(@Param('id') id: string, @Body() body) {
+  async changStatus(
+    @Param(new VerifyDtoPipe('ObjectId', 'id')) id: string,
+    @Body(new VerifyDtoPipe('document', '')) body,
+  ) {
     const findIdRes = await this.verificationService.testOneExist(
       Type.name,
       '_id',
@@ -194,7 +201,7 @@ export class TypeController {
   // 删除
   @Roles('admin')
   @Delete('delete/:id')
-  async delete(@Param('id') id: string) {
+  async delete(@Param(new VerifyDtoPipe('ObjectId', 'id')) id: string) {
     const findSubTypeRes = await this.verificationService.testOneExist(
       Type.name,
       'type_pid',
@@ -213,7 +220,9 @@ export class TypeController {
   // 删除多个
   @Roles('admin')
   @Delete('deleteMany')
-  async deleteMany(@Body() _idArr: string[]) {
+  async deleteMany(
+    @Body(new VerifyDtoPipe('ObjectIdArray', '')) _idArr: string[],
+  ) {
     const findSubTypeRes = await this.verificationService.testInOneExists(
       Type.name,
       'type_pid',

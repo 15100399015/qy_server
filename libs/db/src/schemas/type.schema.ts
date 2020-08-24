@@ -1,6 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, SchemaTypes } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsEnum,
+  IsInt,
+  IsMongoId,
+  IsBoolean,
+  IsArray,
+  IsUrl,
+  IsString,
+} from 'class-validator';
 
 @Schema({
   id: false,
@@ -11,6 +20,7 @@ import { ApiProperty } from '@nestjs/swagger';
 })
 export class Type extends Document {
   @ApiProperty({ description: '分类类型1影片,2文章' })
+  @IsEnum([1, 2]) 
   @Prop({
     type: SchemaTypes.Number,
     index: true,
@@ -31,24 +41,28 @@ export class Type extends Document {
   })
   type_en: string;
   @ApiProperty({ description: '排序' })
+  @IsInt()
   @Prop({
     type: SchemaTypes.Number,
     default: 0,
   })
   type_sort: number;
   @ApiProperty({ description: '父级分类id' })
+  @IsMongoId()
   @Prop({
     type: SchemaTypes.String,
     default: '',
   })
   type_pid: string;
   @ApiProperty({ description: '分类状态' })
+  @IsBoolean()
   @Prop({
     type: SchemaTypes.Boolean,
     default: true,
   })
   type_status: boolean;
   @ApiProperty({ description: '所属用户组,id数组' })
+  @IsArray()
   @Prop({
     type: [
       {
@@ -58,16 +72,19 @@ export class Type extends Document {
   })
   group_ids: string[];
   @ApiProperty({ description: '分类图标' })
+  @IsUrl()
   @Prop({
     type: SchemaTypes.String,
   })
   type_logo: string;
   @ApiProperty({ description: '分类封面' })
+  @IsUrl()
   @Prop({
     type: SchemaTypes.String,
   })
   type_pic: string;
   @ApiProperty({ description: '扩展信息' })
+  @IsString()
   @Prop({
     type: SchemaTypes.String,
   })
@@ -98,4 +115,4 @@ TypeSchema.virtual('type_mold').get(function (this: Type) {
   return this.type_mid;
 });
 
-export const TypeDocName = 'qy' + '_' + Type.name.toLowerCase();
+export const TypeDocName = 'qy_' + Type.name.toLowerCase();

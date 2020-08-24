@@ -164,4 +164,4 @@ export class Topic extends Document {
 }
 
 export const TopicSchema = SchemaFactory.createForClass(Topic);
-export const TopicDocName = 'qy' + '_' + Topic.name.toLowerCase();
+export const TopicDocName = 'qy_' + Topic.name.toLowerCase();

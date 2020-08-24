@@ -203,4 +203,4 @@ export class Article extends Document {
 }
 
 export const ArticleSchema = SchemaFactory.createForClass(Article);
-export const ArticleDocName = 'qy' + '_' + Article.name.toLowerCase();
+export const ArticleDocName = 'qy_' + Article.name.toLowerCase();

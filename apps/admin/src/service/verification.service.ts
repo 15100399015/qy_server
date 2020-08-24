@@ -22,7 +22,7 @@ export class VerificationService {
       .find({
         [key]: { $in: valArr },
       })
-      .count()
+      .countDocuments()
       .exec();
     if (resNum === valArr.length) {
       // 全部存在
