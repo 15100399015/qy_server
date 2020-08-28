@@ -5,9 +5,7 @@ import { ApiBody, ApiProperty } from '@nestjs/swagger';
 // 演员文档
 @Schema({
   timestamps: {
-    //创建时间
     createdAt: 'actor_time_add',
-    // 更新时间
     updatedAt: 'actor_time_up',
   },
 })

@@ -16,6 +16,8 @@ import { Crud } from '@admin/decorator/crud';
 import { Roles } from '@admin/decorator/roles.decorator';
 import { GroupService } from './group.service';
 import { VerificationService } from '@admin/service/verification.service';
+import { VerifyDtoPipe } from '@admin/pipe/verify.dto.pipe';
+
 @ApiTags('权限组')
 @Crud({
   model: Group,
@@ -34,7 +36,7 @@ export class GroupController {
   ) {}
   @Roles('admin')
   @Post('create')
-  async create(@Body() doc: Group) {
+  async create(@Body(new VerifyDtoPipe('document', 'self', Group)) doc: Group) {
     const { group_name } = doc;
     if (group_name === undefined || group_name === '') {
       throw new ForbiddenException('组名称必填');

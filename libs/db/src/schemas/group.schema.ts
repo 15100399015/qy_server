@@ -88,5 +88,4 @@ export class Group extends Document {
 }
 
 export const GroupSchema = SchemaFactory.createForClass(Group);
-
 export const GroupDocName = 'qy_' + Group.name.toLowerCase();

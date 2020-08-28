@@ -5,6 +5,8 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { isValidObjectId } from 'mongoose';
+import { plainToClass, classToClass } from 'class-transformer';
+import { validate } from 'class-validator';
 
 export type mode = 'ObjectId' | 'document' | 'ObjectIdArray';
 function verifIsObjectId(value: string): boolean {
@@ -13,29 +15,38 @@ function verifIsObjectId(value: string): boolean {
 function verifIsObjectIdArray(idArray: string[]): boolean {
   return idArray.every((id) => isValidObjectId(id));
 }
-function verifDocument(value: any): boolean {
+async function verifDocument(value: any, docCls: any): Promise<boolean> {
+  console.log(classToClass(docCls, {}));
+  // const errors = validate(plainToClass(classToClass(docCls), value));
+  // console.log(errors);
   return true;
 }
 @Injectable()
 export class VerifyDtoPipe implements PipeTransform {
-  constructor(private readonly mode: mode, private readonly key?: string) {}
-  transform(value: any, metadata: ArgumentMetadata) {
-    let _value = this.key !== undefined ? value[this.key] : value;
-    if (this.mode === 'ObjectId') {
+  constructor(
+    private readonly mode: mode,
+    private readonly key: 'self' | string,
+    private readonly doc: Object | null,
+  ) {}
+  async transform(value: any, metadata: ArgumentMetadata) {
+    const { mode, key, doc } = this;
+    const _value = key === 'self' ? value : value[key];
+    if (mode === 'ObjectId') {
       if (!verifIsObjectId(_value)) {
-        throw new BadRequestException('参数错误');
+        throw new BadRequestException('验证id错误');
       }
     }
-    if (this.mode === 'document') {
-      if (!verifDocument(_value)) {
-        throw new BadRequestException('参数错误');
+    if (mode === 'document') {
+      if (!(await verifDocument(_value, doc))) {
+        throw new BadRequestException('doc错误');
       }
     }
-    if (this.mode === 'ObjectIdArray') {
+    if (mode === 'ObjectIdArray') {
       if (!verifIsObjectIdArray(_value)) {
-        throw new BadRequestException('参数错误');
+        throw new BadRequestException('id数组验证错误');
       }
     }
     return _value;
   }
 }
+ 

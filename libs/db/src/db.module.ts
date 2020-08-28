@@ -20,12 +20,6 @@ import uniqueValidator = require('mongoose-unique-validator');
         useUnifiedTopology: true,
         useCreateIndex: true,
         useFindAndModify: false,
-        connectionFactory: (connection) => {
-          connection.plugin(uniqueValidator, {
-            message: '{PATH}不可重复',
-          });
-          return connection;
-        },
       }),
     }),
   ],

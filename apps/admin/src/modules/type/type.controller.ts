@@ -52,7 +52,7 @@ export class TypeController {
   // 根据id获取单个文档
   @Roles('admin')
   @Get('findOne/:id')
-  async findOne(@Param(new VerifyDtoPipe('ObjectId', 'id')) id: string) {
+  async findOne(@Param(new VerifyDtoPipe('ObjectId', 'id', null)) id: string) {
     return this.model.findById(id).exec();
   }
   // 创建一条信息
@@ -101,7 +101,7 @@ export class TypeController {
   @Put('update/:id')
   async update(
     @Body() doc: Type,
-    @Param(new VerifyDtoPipe('ObjectId', 'id')) id: string,
+    @Param(new VerifyDtoPipe('ObjectId', 'id', null)) id: string,
   ) {
     const { group_ids, type_pid, type_name, type_mid } = doc;
     const findNameRes = await this.verificationService.testOneExist(
@@ -178,8 +178,8 @@ export class TypeController {
   @Roles('admin')
   @Put('changStatus/:id')
   async changStatus(
-    @Param(new VerifyDtoPipe('ObjectId', 'id')) id: string,
-    @Body(new VerifyDtoPipe('document', '')) body,
+    @Param(new VerifyDtoPipe('ObjectId', 'id', null)) id: string,
+    @Body(new VerifyDtoPipe('document', 'self', null)) body,
   ) {
     const findIdRes = await this.verificationService.testOneExist(
       Type.name,
@@ -201,7 +201,7 @@ export class TypeController {
   // 删除
   @Roles('admin')
   @Delete('delete/:id')
-  async delete(@Param(new VerifyDtoPipe('ObjectId', 'id')) id: string) {
+  async delete(@Param(new VerifyDtoPipe('ObjectId', 'id', null)) id: string) {
     const findSubTypeRes = await this.verificationService.testOneExist(
       Type.name,
       'type_pid',
@@ -221,7 +221,7 @@ export class TypeController {
   @Roles('admin')
   @Delete('deleteMany')
   async deleteMany(
-    @Body(new VerifyDtoPipe('ObjectIdArray', '')) _idArr: string[],
+    @Body(new VerifyDtoPipe('ObjectIdArray', 'self', null)) _idArr: string[],
   ) {
     const findSubTypeRes = await this.verificationService.testInOneExists(
       Type.name,

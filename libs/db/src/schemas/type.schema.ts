@@ -20,7 +20,7 @@ import {
 })
 export class Type extends Document {
   @ApiProperty({ description: '分类类型1影片,2文章' })
-  @IsEnum([1, 2]) 
+  @IsEnum([1, 2])
   @Prop({
     type: SchemaTypes.Number,
     index: true,
@@ -92,8 +92,7 @@ export class Type extends Document {
 }
 
 export const TypeSchema = SchemaFactory.createForClass(Type);
-
-// 虚拟值
+export const TypeDocName = 'qy_' + Type.name.toLowerCase();
 TypeSchema.virtual('children', {
   ref: Type.name,
   localField: '_id',
@@ -114,5 +113,3 @@ TypeSchema.virtual('type_mold').get(function (this: Type) {
   }
   return this.type_mid;
 });
-
-export const TypeDocName = 'qy_' + Type.name.toLowerCase();

@@ -5,9 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 // 视频表
 @Schema({
   timestamps: {
-    // 创建时间
     createdAt: 'video_time_add',
-    // 更新时间
     updatedAt: 'video_time_up',
   },
 })
