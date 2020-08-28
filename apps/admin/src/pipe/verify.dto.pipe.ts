@@ -13,6 +13,7 @@ function verifIsObjectIdArray(idArray: string[]): boolean {
 }
 async function verifDocument(value: any, docCls: any): Promise<boolean> {
   const errors = await validate(plainToClass(docCls, value));
+  console.log(errors);
   return errors.length <= 0;
 }
 @Injectable()
