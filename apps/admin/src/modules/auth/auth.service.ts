@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { Admin } from '@libs/db/schemas/admin.schema';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Injectable } from "@nestjs/common";
+import { Admin } from "@libs/db/schemas/admin.schema";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
 
 @Injectable()
 export class AuthService {
@@ -22,7 +22,7 @@ export class AuthService {
   removeToken(_id: string) {
     return this.model
       .findByIdAndUpdate(_id, {
-        admin_token: '',
+        admin_token: "",
       })
       .exec();
   }
@@ -32,7 +32,7 @@ export class AuthService {
     return this.model
       .findByIdAndUpdate(_id, {
         admin_pwd: newPwd,
-        admin_token: '',
+        admin_token: "",
       })
       .exec();
   }

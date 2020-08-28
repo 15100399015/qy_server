@@ -4,7 +4,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Admin } from "@libs/db/schemas";
 import { Model } from "mongoose";
 import { decrypt } from "@lib/util/crypto";
-import { TokenOption } from "../../../../libs/util/createToken";
+import { TokenOption } from "@lib/util/createToken";
 import * as Joi from "@hapi/joi";
 @Injectable()
 export class RolesGuard implements CanActivate {

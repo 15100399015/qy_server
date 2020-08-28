@@ -1,13 +1,13 @@
-import { Strategy } from 'passport-local';
-import { PassportStrategy } from '@nestjs/passport';
-import { InjectModel } from '@nestjs/mongoose';
-import { Admin } from '@libs/db/schemas';
-import { Model } from 'mongoose';
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { compareSync } from 'bcryptjs';
+import { Strategy } from "passport-local";
+import { PassportStrategy } from "@nestjs/passport";
+import { InjectModel } from "@nestjs/mongoose";
+import { Admin } from "@libs/db/schemas";
+import { Model } from "mongoose";
+import { Injectable, BadRequestException } from "@nestjs/common";
+import { compareSync } from "bcryptjs";
 
 @Injectable()
-export class LocalStrategy extends PassportStrategy(Strategy, 'local-admin') {
+export class LocalStrategy extends PassportStrategy(Strategy, "local-admin") {
   constructor(@InjectModel(Admin.name) private readonly model: Model<Admin>) {
     super();
   }
@@ -16,16 +16,16 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local-admin') {
       .findOne({
         admin_name: username,
       })
-      .select('+admin_pwd')
+      .select("+admin_pwd")
       .exec();
     if (!user) {
-      throw new BadRequestException('用户不存在,请检查用户名');
+      throw new BadRequestException("用户不存在,请检查用户名");
     }
     if (!user.admin_status) {
-      throw new BadRequestException('账户被禁用');
+      throw new BadRequestException("账户被禁用");
     }
     if (!compareSync(password, user.admin_pwd)) {
-      throw new BadRequestException('密码错误');
+      throw new BadRequestException("密码错误");
     }
     return user;
   }
