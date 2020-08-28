@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/mongoose';
-import { Connection, Model } from 'mongoose';
+import { Injectable } from "@nestjs/common";
+import { InjectConnection } from "@nestjs/mongoose";
+import { Connection, Model } from "mongoose";
 
 @Injectable()
-export class VerificationService {
+export class VerifyService {
   private readonly models: { [key: string]: Model<any, {}> };
   constructor(@InjectConnection() private connection: Connection) {
     this.models = this.connection.models;

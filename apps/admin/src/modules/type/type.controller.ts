@@ -16,7 +16,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Roles } from '@admin/decorator/roles.decorator';
 import { TypeService } from './type.service';
-import { VerificationService } from '@admin/service/verification.service';
+import { VerificationService } from '@admin/service/verify.service';
 import { VerifyDtoPipe } from '@admin/pipe/verify.dto.pipe';
 
 @ApiTags('分类')
