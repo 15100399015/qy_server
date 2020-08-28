@@ -5,7 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { isValidObjectId } from 'mongoose';
-import { plainToClass, classToClass } from 'class-transformer';
+import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 
 export type mode = 'ObjectId' | 'document' | 'ObjectIdArray';
@@ -16,10 +16,8 @@ function verifIsObjectIdArray(idArray: string[]): boolean {
   return idArray.every((id) => isValidObjectId(id));
 }
 async function verifDocument(value: any, docCls: any): Promise<boolean> {
-  console.log(classToClass(docCls, {}));
-  // const errors = validate(plainToClass(classToClass(docCls), value));
-  // console.log(errors);
-  return true;
+  const errors = await validate(plainToClass(docCls, value));
+  return errors.length <= 0;
 }
 @Injectable()
 export class VerifyDtoPipe implements PipeTransform {
@@ -49,4 +47,3 @@ export class VerifyDtoPipe implements PipeTransform {
     return _value;
   }
 }
- 

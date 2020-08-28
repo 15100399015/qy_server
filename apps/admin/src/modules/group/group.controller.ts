@@ -31,9 +31,9 @@ import { GroupDto } from './group.dto';
 @Controller('group')
 export class GroupController {
   constructor(
-    @InjectModel(Group.name) private readonly model: Model<Group>,
     private readonly groupService: GroupService,
     private readonly verificationService: VerificationService,
+    @InjectModel(Group.name) private readonly model: Model<Group>,
   ) {}
   @Roles('admin')
   @Post('create')
@@ -41,9 +41,6 @@ export class GroupController {
     @Body(new VerifyDtoPipe('document', 'self', GroupDto)) doc: Group,
   ) {
     const { group_name } = doc;
-    if (group_name === undefined || group_name === '') {
-      throw new ForbiddenException('组名称必填');
-    }
     const findNameRes = await this.verificationService.testOneExist(
       Group.name,
       'group_name',
@@ -90,7 +87,7 @@ export class GroupController {
   }
   @Roles('admin')
   @Delete('delete/:id')
-  async delete(@Param('id') id) {
+  async delete(@Param(new VerifyDtoPipe('ObjectId', 'id', null)) id: string) {
     const testBind = await this.groupService.inspect(id);
     if (testBind !== true) {
       throw new ForbiddenException(`请先清除${testBind}模块下的属于该组的内容`);
@@ -104,7 +101,10 @@ export class GroupController {
   }
   @Roles('admin')
   @Put('changStatus/:id')
-  async changStatus(@Param('id') id: string, @Body() body) {
+  async changStatus(
+    @Param(new VerifyDtoPipe('ObjectId', 'id', null)) id: string,
+    @Body() body,
+  ) {
     const findIdRes = await this.verificationService.testOneExist(
       Group.name,
       '_id',
