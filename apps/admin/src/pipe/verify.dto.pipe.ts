@@ -1,14 +1,9 @@
-import {
-  PipeTransform,
-  Injectable,
-  ArgumentMetadata,
-  BadRequestException,
-} from '@nestjs/common';
-import { isValidObjectId } from 'mongoose';
-import { plainToClass } from 'class-transformer';
-import { validate } from 'class-validator';
+import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from "@nestjs/common";
+import { isValidObjectId } from "mongoose";
+import { plainToClass } from "class-transformer";
+import { validate } from "class-validator";
 
-export type mode = 'ObjectId' | 'document' | 'ObjectIdArray';
+export type mode = "ObjectId" | "document" | "ObjectIdArray";
 function verifIsObjectId(value: string): boolean {
   return isValidObjectId(value);
 }
@@ -21,27 +16,23 @@ async function verifDocument(value: any, docCls: any): Promise<boolean> {
 }
 @Injectable()
 export class VerifyDtoPipe implements PipeTransform {
-  constructor(
-    private readonly mode: mode,
-    private readonly key: 'self' | string,
-    private readonly doc: Object | null,
-  ) {}
+  constructor(private readonly mode: mode, private readonly key: "self" | string, private readonly doc: Object | null) {}
   async transform(value: any, metadata: ArgumentMetadata) {
     const { mode, key, doc } = this;
-    const _value = key === 'self' ? value : value[key];
-    if (mode === 'ObjectId') {
+    const _value = key === "self" ? value : value[key];
+    if (mode === "ObjectId") {
       if (!verifIsObjectId(_value)) {
-        throw new BadRequestException('验证id错误');
+        throw new BadRequestException("验证id错误");
       }
     }
-    if (mode === 'document') {
+    if (mode === "document") {
       if (!(await verifDocument(_value, doc))) {
-        throw new BadRequestException('doc错误');
+        throw new BadRequestException("doc错误");
       }
     }
-    if (mode === 'ObjectIdArray') {
+    if (mode === "ObjectIdArray") {
       if (!verifIsObjectIdArray(_value)) {
-        throw new BadRequestException('id数组验证错误');
+        throw new BadRequestException("id数组验证错误");
       }
     }
     return _value;
