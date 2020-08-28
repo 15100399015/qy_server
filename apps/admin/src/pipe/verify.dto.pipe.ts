@@ -4,6 +4,7 @@ import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
 
 export type mode = "ObjectId" | "document" | "ObjectIdArray";
+
 function verifIsObjectId(value: string): boolean {
   return isValidObjectId(value);
 }

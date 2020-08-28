@@ -1,4 +1,4 @@
-import { MongooseModule } from '@nestjs/mongoose';
+import { MongooseModule } from "@nestjs/mongoose";
 import {
   Video,
   VideoSchema,
@@ -45,7 +45,7 @@ import {
   Mag,
   MagSchema,
   MagDocName,
-} from '../../schemas';
+} from "../../schemas";
 
 function useFactory(schema) {
   return schema;

@@ -1,13 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import {
-  writeFile,
-  existsSync,
-  mkdirSync,
-  writeFileSync,
-  readFileSync,
-} from 'fs';
-import { join } from 'path';
-import { get, set } from 'lodash';
+import { Injectable } from "@nestjs/common";
+import { writeFile, existsSync, mkdirSync, writeFileSync, readFileSync } from "fs";
+import { join } from "path";
+import { get, set } from "lodash";
 
 function S(dir: string, fileName: string): Promise<string> {
   return new Promise((resolv, reject) => {
@@ -30,8 +24,8 @@ function S(dir: string, fileName: string): Promise<string> {
 
 @Injectable()
 export class ExtraService {
-  private readonly SETTINGFILEPATH = './';
-  private readonly SETTINGFILENAME = 'setting.json';
+  private readonly SETTINGFILEPATH = "./";
+  private readonly SETTINGFILENAME = "setting.json";
   // 获取配置文件内容
   async get(path?: string) {
     const fliePath = await S(this.SETTINGFILEPATH, this.SETTINGFILENAME);
@@ -44,9 +38,7 @@ export class ExtraService {
   // 设置文件内容
   async set(path: string, value: any) {
     const fliePath = await S(this.SETTINGFILEPATH, this.SETTINGFILENAME);
-    const newSettingStr = JSON.stringify(
-      set(JSON.parse(readFileSync(fliePath).toString()), path, value),
-    );
+    const newSettingStr = JSON.stringify(set(JSON.parse(readFileSync(fliePath).toString()), path, value));
     const newSetting = await new Promise((resolve, reject) => {
       writeFile(fliePath, newSettingStr, (err) => {
         if (err) return reject(err);

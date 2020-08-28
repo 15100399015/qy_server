@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
-import { ExtraService } from './extra.service';
+import { Module } from "@nestjs/common";
+import { ExtraService } from "./extra.service";
 
 @Module({
   providers: [ExtraService],

@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, SchemaTypes } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, SchemaTypes } from "mongoose";
 // 用户组文档
 @Schema({
   versionKey: false,
@@ -57,10 +57,10 @@ export class Group extends Document {
   // 组备注
   @Prop({
     type: SchemaTypes.String,
-    default: '',
+    default: "",
   })
   group_remarks: string;
 }
 
 export const GroupSchema = SchemaFactory.createForClass(Group);
-export const GroupDocName = 'qy_' + Group.name.toLowerCase();
+export const GroupDocName = "qy_" + Group.name.toLowerCase();

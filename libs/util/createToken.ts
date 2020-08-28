@@ -1,4 +1,4 @@
-import { encrypt } from './crypto';
+import { encrypt } from "./crypto";
 export interface TokenOption {
   // 有效时常
   eff?: number;
@@ -16,6 +16,6 @@ export const createToken = (obj: TokenOption) => {
   } else {
     tokenObj.exp = 0;
   }
-  Reflect.deleteProperty(tokenObj, 'eff');
-  return encrypt('json', tokenObj);
+  Reflect.deleteProperty(tokenObj, "eff");
+  return encrypt("json", tokenObj);
 };

@@ -1,11 +1,11 @@
-const cryptoRandomString = require('crypto-random-string');
-const Client = require('ali-oss');
-const { BadRequestException } = require('@nestjs/common');
+const cryptoRandomString = require("crypto-random-string");
+const Client = require("ali-oss");
+const { BadRequestException } = require("@nestjs/common");
 
 // 文静名称/ 文件路径
 function getDestination(req, file, cb) {
   const random = cryptoRandomString({ length: 32 });
-  const format = file.originalname.substr(file.originalname.lastIndexOf('.'));
+  const format = file.originalname.substr(file.originalname.lastIndexOf("."));
   const name = random + format;
   cb(name);
 }
@@ -56,8 +56,8 @@ export const aliossStorage = function (opts) {
 
 export const fileFilter = (req, file, cb) => {
   const on = file.originalname;
-  const format = on.substr(on.lastIndexOf('.') + 1);
+  const format = on.substr(on.lastIndexOf(".") + 1);
   const verify = /Webp|BMP|GIF|JPEG|JPG|PNG|SVG/gi.test(format);
-  const err = verify ? null : new BadRequestException('只接受图片格式');
+  const err = verify ? null : new BadRequestException("只接受图片格式");
   cb(err, verify);
 };
