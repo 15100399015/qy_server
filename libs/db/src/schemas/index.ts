@@ -13,4 +13,3 @@ export * from './plog.schema';
 export * from './recharge.schema';
 export * from './distribute.schema';
 export * from './msg.schema';
-import './test';

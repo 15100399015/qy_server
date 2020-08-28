@@ -10,7 +10,7 @@ import {
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { createToken } from '@admin/util/createToken';
+import { createToken } from '@lib/util/createToken';
 import { Roles } from '@admin/decorator/roles.decorator';
 
 @ApiTags('认证')
