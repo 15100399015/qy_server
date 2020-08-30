@@ -1,7 +1,7 @@
 import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from "@nestjs/common";
 import { isValidObjectId } from "mongoose";
 import { plainToClass } from "class-transformer";
-import { validate } from "class-validator";
+import { validate, ValidatorOptions } from "class-validator";
 
 export type mode = "ObjectId" | "document" | "ObjectIdArray";
 
@@ -11,16 +11,15 @@ function verifIsObjectId(value: string): boolean {
 function verifIsObjectIdArray(idArray: string[]): boolean {
   return idArray.every((id) => isValidObjectId(id));
 }
-async function verifDocument(value: any, docCls: any): Promise<boolean> {
-  const errors = await validate(plainToClass(docCls, value));
-  console.log(errors);
+async function verifDocument(value: any, docCls: any, validatorOptions: ValidatorOptions): Promise<boolean> {
+  const errors = await validate(plainToClass(docCls, value, validatorOptions));
   return errors.length <= 0;
 }
 @Injectable()
 export class VerifyDtoPipe implements PipeTransform {
-  constructor(private readonly mode: mode, private readonly key: "self" | string, private readonly doc: Object | null) {}
+  constructor(private readonly mode: mode, private readonly key: "self" | string, private readonly doc?: Object, private readonly validatorOptions?: ValidatorOptions) {}
   async transform(value: any, metadata: ArgumentMetadata) {
-    const { mode, key, doc } = this;
+    const { mode, key, doc, validatorOptions } = this;
     const _value = key === "self" ? value : value[key];
     if (mode === "ObjectId") {
       if (!verifIsObjectId(_value)) {
@@ -28,7 +27,7 @@ export class VerifyDtoPipe implements PipeTransform {
       }
     }
     if (mode === "document") {
-      if (!(await verifDocument(_value, doc))) {
+      if (!(await verifDocument(_value, doc, validatorOptions))) {
         throw new BadRequestException("doc错误");
       }
     }

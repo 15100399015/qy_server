@@ -1,15 +1,5 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, SchemaTypes } from 'mongoose';
-import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEnum,
-  IsInt,
-  IsMongoId,
-  IsBoolean,
-  IsArray,
-  IsUrl,
-  IsString,
-} from 'class-validator';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, SchemaTypes } from "mongoose";
 
 @Schema({
   id: false,
@@ -19,8 +9,7 @@ import {
   },
 })
 export class Type extends Document {
-  @ApiProperty({ description: '分类类型1影片,2文章' })
-  @IsEnum([1, 2])
+  // 分类类型1影片,2文章
   @Prop({
     type: SchemaTypes.Number,
     index: true,
@@ -28,41 +17,37 @@ export class Type extends Document {
     enum: [1, 2],
   })
   type_mid: number;
-  @ApiProperty({ description: '分类名称' })
+  // 分类名称
   @Prop({
     type: SchemaTypes.String,
     required: true,
     unique: true,
   })
   type_name: string;
-  @ApiProperty({ description: '别名' })
+  // 别名
   @Prop({
     type: SchemaTypes.String,
   })
   type_en: string;
-  @ApiProperty({ description: '排序' })
-  @IsInt()
+  // 排序
   @Prop({
     type: SchemaTypes.Number,
     default: 0,
   })
   type_sort: number;
-  @ApiProperty({ description: '父级分类id' })
-  @IsMongoId()
+  // 父级分类id
   @Prop({
     type: SchemaTypes.String,
-    default: '',
+    default: "",
   })
   type_pid: string;
-  @ApiProperty({ description: '分类状态' })
-  @IsBoolean()
+  // 分类状态
   @Prop({
     type: SchemaTypes.Boolean,
     default: true,
   })
   type_status: boolean;
-  @ApiProperty({ description: '所属用户组,id数组' })
-  @IsArray()
+  // 所属用户组,id数组
   @Prop({
     type: [
       {
@@ -71,20 +56,17 @@ export class Type extends Document {
     ],
   })
   group_ids: string[];
-  @ApiProperty({ description: '分类图标' })
-  @IsUrl()
+  // 分类图标
   @Prop({
     type: SchemaTypes.String,
   })
   type_logo: string;
-  @ApiProperty({ description: '分类封面' })
-  @IsUrl()
+  // 分类封面
   @Prop({
     type: SchemaTypes.String,
   })
   type_pic: string;
-  @ApiProperty({ description: '扩展信息' })
-  @IsString()
+  // 扩展信息
   @Prop({
     type: SchemaTypes.String,
   })
@@ -92,24 +74,15 @@ export class Type extends Document {
 }
 
 export const TypeSchema = SchemaFactory.createForClass(Type);
-export const TypeDocName = 'qy_' + Type.name.toLowerCase();
-TypeSchema.virtual('children', {
+export const TypeDocName = "qy_" + Type.name.toLowerCase();
+TypeSchema.virtual("children", {
   ref: Type.name,
-  localField: '_id',
-  foreignField: 'type_pid',
+  localField: "_id",
+  foreignField: "type_pid",
 });
-TypeSchema.virtual('type_mold').get(function (this: Type) {
-  if (this.type_mid === 1) {
-    return {
-      name: '视频',
-      type_mid: this.type_mid,
-    };
-  }
-  if (this.type_mid === 2) {
-    return {
-      name: '文章',
-      type_mid: this.type_mid,
-    };
-  }
-  return this.type_mid;
+TypeSchema.virtual("type_mold").get(function (this: Type) {
+  return {
+    name: this.type_mid === 1 ? "视频" : this.type_mid === 2 && "文章",
+    type_mid: this.type_mid,
+  };
 });
