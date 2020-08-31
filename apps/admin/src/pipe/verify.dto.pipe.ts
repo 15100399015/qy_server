@@ -1,7 +1,8 @@
-import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from "@nestjs/common";
+import { PipeTransform, Injectable, ArgumentMetadata } from "@nestjs/common";
 import { isValidObjectId } from "mongoose";
 import { plainToClass } from "class-transformer";
 import { validate, ValidatorOptions } from "class-validator";
+import { _403 } from "@lib/util/HttpExceptionCode";
 
 export type mode = "ObjectId" | "document" | "ObjectIdArray";
 
@@ -26,21 +27,9 @@ export class VerifyDtoPipe implements PipeTransform {
   async transform(value: any, metadata: ArgumentMetadata) {
     const { mode, key, doc, validatorOptions } = this;
     const _value = key === "self" ? value : value[key];
-    if (mode === "ObjectId") {
-      if (!verifIsObjectId(_value)) {
-        throw new BadRequestException("验证id错误");
-      }
-    }
-    if (mode === "document") {
-      if (!(await verifDocument(_value, doc, validatorOptions))) {
-        throw new BadRequestException("doc错误");
-      }
-    }
-    if (mode === "ObjectIdArray") {
-      if (!verifIsObjectIdArray(_value)) {
-        throw new BadRequestException("id数组验证错误");
-      }
-    }
+    if (mode === "ObjectId" && !verifIsObjectId(_value)) _403("ObjectId验证错误");
+    if (mode === "document" && !(await verifDocument(_value, doc, validatorOptions))) _403("doc错误");
+    if (mode === "ObjectIdArray" && !verifIsObjectIdArray(_value)) _403("ObjectId数组验证错误");
     return _value;
   }
 }

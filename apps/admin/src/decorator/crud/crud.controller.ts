@@ -1,9 +1,9 @@
 import { Model } from "mongoose";
-import { Get, Param, Post, Put, Delete, Body, HttpStatus } from "@nestjs/common";
+import { Get, Param, Post, Put, Delete, Body } from "@nestjs/common";
 import { CrudQuery, ICrudQuery } from "./crud-query.decorator";
 import { get } from "lodash";
 import { CrudOptionsWithModel } from "./crud.interface";
-import { DiyHttpException } from "./util";
+import { insideErr } from "@lib/util/httpExceptionCode";
 
 export class CrudPlaceholderDto {}
 export class CrudController {
@@ -21,13 +21,7 @@ export class CrudController {
     const find = async () => {
       const data = await this.model.find().select(select).where(where).skip(skip).limit(limit).sort(sort).populate(populate).exec();
       const total = await this.model.countDocuments(where);
-      return {
-        total: total,
-        data: data,
-        lastPage: Math.ceil(total / limit),
-        currentPage: page,
-        limit: data.length,
-      };
+      return { total: total, data: data, lastPage: Math.ceil(total / limit), currentPage: page, limit: data.length };
     };
     return find();
   }
@@ -47,24 +41,13 @@ export class CrudController {
   @Post("create")
   async create(@Body() body: CrudPlaceholderDto) {
     const transform = get(this.crudOptions, "routes.create.transform");
-    if (transform) {
-      body = transform(body);
-    }
-    return this.model.create(body).catch((err) => {
-      throw new DiyHttpException(HttpStatus.BAD_REQUEST, err);
-    });
+    if (transform) body = transform(body);
+    return this.model.create(body).catch(insideErr);
   }
   // 插入多个
   @Post("insertMany")
   async insertMany(@Body() body: CrudPlaceholderDto) {
-    return this.model
-      .insertMany(body, {
-        ordered: false,
-        rawResult: false,
-      })
-      .catch((err) => {
-        throw new DiyHttpException(HttpStatus.BAD_REQUEST, err);
-      });
+    return this.model.insertMany(body, { ordered: false, rawResult: false }).catch(insideErr);
   }
   // 根据id更新一条数据
   @Put("update/:id")
@@ -73,34 +56,21 @@ export class CrudController {
     if (transform) {
       body = transform(body);
     }
-    return this.model
-      .findByIdAndUpdate(id, body, {
-        new: true,
-        upsert: false,
-        runValidators: true,
-        context: "query",
-      })
-      .catch((err) => {
-        throw new DiyHttpException(HttpStatus.BAD_REQUEST, err);
-      });
+    return this.model.findByIdAndUpdate(id, body, { new: true, upsert: false, runValidators: true, context: "query" }).exec().catch(insideErr);
   }
   // 更新多个
   @Put("updateMany")
   updateMany(@Body("conditions") conditions: any, @Body("doc") doc: CrudPlaceholderDto) {
-    return this.model.updateMany(conditions, doc).catch((err) => {
-      throw new DiyHttpException(HttpStatus.BAD_REQUEST, err);
-    });
+    return this.model.updateMany(conditions, doc).exec().catch(insideErr);
   }
   // 根据id删除一条数据
   @Delete("delete/:id")
   delete(@Param("id") id: string) {
-    return this.model.findByIdAndRemove(id).catch((err) => {
-      throw new DiyHttpException(HttpStatus.BAD_REQUEST, err);
-    });
+    return this.model.findByIdAndRemove(id).exec(insideErr);
   }
   // 删除多个
   @Delete("deleteMany")
   deleteMany(@Body("conditions") conditions: CrudPlaceholderDto) {
-    return this.model.deleteMany(conditions).exec();
+    return this.model.deleteMany(conditions).exec().catch(insideErr);
   }
 }
