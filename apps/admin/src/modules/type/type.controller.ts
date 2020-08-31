@@ -59,7 +59,7 @@ export class TypeController {
     const findGroupRes = await this.verifyService.testAllExist(Group.name, "_id", group_ids);
     if (!findIdRes) _403("数据不存在");
     // 检查是否需要更新
-    if (Object.keys(doc).every((item) => doc[item].toString() === findIdRes[item].toString())) _403("无需更新");
+    if (Object.keys(doc).every((item) => String(doc[item]) === String(findIdRes[item]))) _403("无需更新");
     // 检查分类名是否重复
     if (findNameRes && String(id) !== String(findNameRes._id)) _403("分类名重复");
     // 父分类是否存在

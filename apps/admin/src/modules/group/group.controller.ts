@@ -32,7 +32,7 @@ export class GroupController {
   async update(@Param(new VerifyDtoPipe("ObjectId", "id")) id: string, @Body(new VerifyDtoPipe("document", "self", GroupDto, { groups: ["update"] })) doc: Group) {
     const findIdRes = await this.verifyService.testOneExist(Group.name, "_id", id);
     if (!findIdRes) _403("数据不存在");
-    if (Object.keys(doc).every((item) => doc[item].toString() === findIdRes[item].toString())) _403("无需更新");
+    if (Object.keys(doc).every((item) => String(doc[item]) === String(findIdRes[item]))) _403("无需更新");
     if (String(id) !== String(findIdRes._id)) _403("组名称重复");
     return this.model.findByIdAndUpdate(id, doc).exec().catch(insideErr);
   }
