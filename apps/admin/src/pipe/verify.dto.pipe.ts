@@ -15,7 +15,7 @@ function verifIsObjectIdArray(idArray: string[]): boolean {
 }
 // 验证文档
 async function verifDocument(value: any, docCls: any, validatorOptions: ValidatorOptions): Promise<boolean> {
-  const errors = await validate(plainToClass(docCls, value), Object.assign({ whitelist: true, skipMissingProperties: true } as ValidatorOptions, validatorOptions));
+  const errors = await validate(plainToClass(docCls, value), Object.assign({ whitelist: true, skipMissingProperties: true, forbidUnknownValues: true }, validatorOptions));
   console.log(errors);
   return errors.length <= 0;
 }
