@@ -5,14 +5,18 @@ import { validate, ValidatorOptions } from "class-validator";
 
 export type mode = "ObjectId" | "document" | "ObjectIdArray";
 
+// 验证过id
 function verifIsObjectId(value: string): boolean {
   return isValidObjectId(value);
 }
+// 验证id数组
 function verifIsObjectIdArray(idArray: string[]): boolean {
   return idArray.every((id) => isValidObjectId(id));
 }
+// 验证文档
 async function verifDocument(value: any, docCls: any, validatorOptions: ValidatorOptions): Promise<boolean> {
-  const errors = await validate(plainToClass(docCls, value, validatorOptions));
+  const errors = await validate(plainToClass(docCls, value, Object.assign({ whitelist: true } as ValidatorOptions, validatorOptions)));
+  console.log(errors);
   return errors.length <= 0;
 }
 @Injectable()

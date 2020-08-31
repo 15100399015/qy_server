@@ -7,45 +7,33 @@ import { Crud } from "@admin/decorator/crud";
 import { Roles } from "@admin/decorator/roles.decorator";
 import { VerifyService } from "@admin/service/verify.service";
 import { VerifyDtoPipe } from "@admin/pipe/verify.dto.pipe";
-import { _403, _404, _500 } from "@lib/util/HttpExceptionCode";
+import { _403, _404, _500, insideErr } from "@lib/util/HttpExceptionCode";
 import { GroupDto } from "./group.dto";
 import { GroupService } from "./group.service";
-
-function insideErr() {
-  _500("服务器内部错误");
-}
 
 @ApiTags("权限组")
 @Crud({
   model: Group,
   decorators: [Roles("admin")],
-  routes: {
-    findAll: true,
-    findOne: true,
-  },
+  routes: { findAll: true, findOne: true },
 })
 @Controller("group")
 export class GroupController {
   constructor(private readonly groupService: GroupService, private readonly verifyService: VerifyService, @InjectModel(Group.name) private readonly model: Model<Group>) {}
   @Roles("admin")
   @Post("create")
-  async create(@Body(new VerifyDtoPipe("document", "self", GroupDto)) doc: Group) {
-    const { group_name } = doc;
-    const findNameRes = await this.verifyService.testOneExist(Group.name, "group_name", group_name);
+  async create(@Body(new VerifyDtoPipe("document", "self", GroupDto, { groups: ["create"] })) doc: Group) {
+    const findNameRes = await this.verifyService.testOneExist(Group.name, "group_name", doc.group_name);
     if (findNameRes) _403("组名称重复");
     return this.model.create(doc).catch(insideErr);
   }
   @Roles("admin")
   @Put("update/:id")
-  async update(@Param(new VerifyDtoPipe("ObjectId", "id")) id: string, @Body(new VerifyDtoPipe("document", "self", GroupDto, { skipMissingProperties: true })) doc: Group) {
-    const { group_name } = doc;
-    const findNameRes = await this.verifyService.testOneExist(Group.name, "group_name", group_name);
-    if (findNameRes) {
-      if (Object.keys(doc).every((item) => doc[item].toString() === findNameRes[item].toString())) _403("无需更新");
-      if (String(id) !== String(findNameRes._id)) _403("组名称重复");
-    } else {
-      _404("数据不存在");
-    }
+  async update(@Param(new VerifyDtoPipe("ObjectId", "id")) id: string, @Body(new VerifyDtoPipe("document", "self", GroupDto, { groups: ["update"] })) doc: Group) {
+    const findIdRes = await this.verifyService.testOneExist(Group.name, "_id", id);
+    if (!findIdRes) _403("数据不存在");
+    if (Object.keys(doc).every((item) => doc[item].toString() === findIdRes[item].toString())) _403("无需更新");
+    if (String(id) !== String(findIdRes._id)) _403("组名称重复");
     return this.model.findByIdAndUpdate(id, doc).exec().catch(insideErr);
   }
   @Roles("admin")

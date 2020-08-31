@@ -108,6 +108,6 @@ export class TypeController {
   async deleteMany(@Body() _idArr: string[]) {
     const findSubTypeRes = await this.verifyService.testInOneExists(Type.name, "type_pid", _idArr);
     if (findSubTypeRes) _403("请先清理子分类");
-    return this.model.deleteMany({ _id: { $in: _idArr } }).exec();
+    return this.model.deleteMany({ _id: { $in: _idArr } }).exec().catch(insideErr);
   }
 }

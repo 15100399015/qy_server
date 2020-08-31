@@ -8,3 +8,6 @@ export function _404(message: string) {
 export function _500(message: string) {
   throw new InternalServerErrorException(message);
 }
+export function insideErr() {
+  _500("服务器内部错误");
+}
