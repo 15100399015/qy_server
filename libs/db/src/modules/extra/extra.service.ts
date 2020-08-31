@@ -10,15 +10,10 @@ function S(dir: string, fileName: string): Promise<string> {
     const dirExist = existsSync(flieDir);
     const fileExist = existsSync(fliePath);
     if (fileExist) return resolv(fliePath);
-    if (!dirExist) {
-      mkdirSync(flieDir);
-    }
+    if (!dirExist) mkdirSync(flieDir);
     writeFileSync(fliePath, JSON.stringify({}));
-    if (!!readFileSync(fliePath)) {
-      resolv(fliePath);
-    } else {
-      reject();
-    }
+    if (!!readFileSync(fliePath)) resolv(fliePath);
+    else reject();
   });
 }
 
@@ -30,9 +25,7 @@ export class ExtraService {
   async get(path?: string) {
     const fliePath = await S(this.SETTINGFILEPATH, this.SETTINGFILENAME);
     const fileData = JSON.parse(readFileSync(fliePath).toString());
-    if (path) {
-      return get(fileData, path, undefined);
-    }
+    if (path) return get(fileData, path, undefined);
     return fileData;
   }
   // 设置文件内容
