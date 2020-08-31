@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsInt, IsMongoId, IsBoolean, IsArray, IsUrl, IsString, IsDefined } from "class-validator";
+import { IsEnum, IsInt, IsMongoId, IsBoolean, IsArray, IsUrl, IsString, IsDefined, Length } from "class-validator";
 
 export class TypeDto {
   @ApiProperty({ description: "分类类型1影片,2文章" })
@@ -9,6 +9,7 @@ export class TypeDto {
   @ApiProperty({ description: "分类名称" })
   @IsDefined({ groups: ["create"] })
   @IsString({ always: true })
+  @Length(2, 10, { always: true })
   type_name: string;
   @ApiProperty({ description: "别名" })
   @IsString({ always: true })
@@ -17,7 +18,7 @@ export class TypeDto {
   @IsInt({ always: true })
   type_sort: number;
   @ApiProperty({ description: "父级分类id" })
-  @IsMongoId({ always: true })
+  @IsString({ always: true })
   type_pid: string;
   @ApiProperty({ description: "分类状态" })
   @IsBoolean({ always: true })
