@@ -18,7 +18,7 @@ class AutoTokenDto {
 }
 
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class AuthGuard implements CanActivate {
   // 注入工具类
   constructor(private readonly reflector: Reflector, @InjectModel(Admin.name) private readonly adminModel: Model<Admin>) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {

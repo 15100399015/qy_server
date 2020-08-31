@@ -10,13 +10,13 @@ import { UserModule } from "./modules/user/user.module";
 import { TypeModule } from "./modules/type/type.module";
 import { GroupModule } from "./modules/group/group.module";
 import { SettingModule } from "./modules/setting/setting.module";
-import { RolesGuard } from "./guard/roles.guard";
+import { AuthGuard } from "./guard/auto.guard";
 @Module({
   imports: [UploadModule, AdminModule, CommonModule, AuthModule, ArticleModule, VideoModule, SettingModule, UserModule, TypeModule, GroupModule],
   providers: [
     {
       provide: APP_GUARD,
-      useClass: RolesGuard,
+      useClass: AuthGuard,
     },
   ],
 })
