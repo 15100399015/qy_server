@@ -1,6 +1,6 @@
-import { createParamDecorator, ExecutionContext, HttpStatus } from "@nestjs/common";
+import { createParamDecorator, ExecutionContext } from "@nestjs/common";
 import { Request } from "express";
-import { DiyHttpException } from "./util";
+import { _403 } from "@lib/util/httpExceptionCode";
 
 export class ICrudQuery {
   where?: any;
@@ -18,8 +18,6 @@ export const CrudQuery = createParamDecorator((name = "query", ctx: ExecutionCon
     // @ts-ignore
     return JSON.parse(req.query[name]);
   } catch (e) {
-    throw new DiyHttpException(HttpStatus.BAD_REQUEST, {
-      mas: "query switch failed ",
-    });
+    _403("query switch failed");
   }
 });
