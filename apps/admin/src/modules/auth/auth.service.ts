@@ -12,29 +12,15 @@ export class AuthService {
   }
   // 更新token
   upToken(_id: string, token: string) {
-    return this.model
-      .findByIdAndUpdate(_id, {
-        admin_token: token,
-      })
-      .exec();
+    return this.model.findByIdAndUpdate(_id, { admin_token: token }).exec();
   }
   // 清除token
   removeToken(_id: string) {
-    return this.model
-      .findByIdAndUpdate(_id, {
-        admin_token: "",
-      })
-      .exec();
+    return this.model.findByIdAndUpdate(_id, { admin_token: "" }).exec();
   }
-
   // 重置密码
   resetPwd(_id: string, newPwd: string) {
-    return this.model
-      .findByIdAndUpdate(_id, {
-        admin_pwd: newPwd,
-        admin_token: "",
-      })
-      .exec();
+    return this.model.findByIdAndUpdate(_id, { admin_pwd: newPwd, admin_token: "" }).exec();
   }
   // 获取信息
   getInfo(_id: string) {

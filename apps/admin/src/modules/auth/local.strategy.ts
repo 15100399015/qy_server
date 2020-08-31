@@ -7,17 +7,12 @@ import { Injectable, BadRequestException } from "@nestjs/common";
 import { compareSync } from "bcryptjs";
 
 @Injectable()
-export class LocalStrategy extends PassportStrategy(Strategy, "local-admin") {
+export class LocalStrategy extends PassportStrategy(Strategy, "local-login") {
   constructor(@InjectModel(Admin.name) private readonly model: Model<Admin>) {
     super();
   }
   async validate(username: string, password: string) {
-    const user = await this.model
-      .findOne({
-        admin_name: username,
-      })
-      .select("+admin_pwd")
-      .exec();
+    const user = await this.model.findOne({ admin_name: username }).select("+admin_pwd").exec();
     if (!user) {
       throw new BadRequestException("用户不存在,请检查用户名");
     }

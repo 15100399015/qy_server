@@ -1,4 +1,4 @@
-import { CrudOptions } from './crud.interface';
+import { CrudOptions } from "./crud.interface";
 
 export class CrudConfig {
   public static options: CrudOptions = {
