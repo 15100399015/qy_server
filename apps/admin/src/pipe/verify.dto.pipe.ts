@@ -15,10 +15,11 @@ function verifIsObjectIdArray(idArray: string[]): boolean {
 }
 // 验证文档
 async function verifDocument(value: any, docCls: any, validatorOptions: ValidatorOptions): Promise<boolean> {
-  const errors = await validate(plainToClass(docCls, value, Object.assign({ whitelist: true } as ValidatorOptions, validatorOptions)));
+  const errors = await validate(plainToClass(docCls, value), Object.assign({ whitelist: true, skipMissingProperties: true } as ValidatorOptions, validatorOptions));
   console.log(errors);
   return errors.length <= 0;
 }
+// pipe
 @Injectable()
 export class VerifyDtoPipe implements PipeTransform {
   constructor(private readonly mode: mode, private readonly key: "self" | string, private readonly doc?: Object, private readonly validatorOptions?: ValidatorOptions) {}

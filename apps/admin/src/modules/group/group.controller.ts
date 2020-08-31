@@ -29,7 +29,7 @@ export class GroupController {
   }
   @Roles("admin")
   @Put("update/:id")
-  async update(@Param(new VerifyDtoPipe("ObjectId", "id")) id: string, @Body(new VerifyDtoPipe("document", "self", GroupDto, { groups: ["update"] })) doc: Group) {
+  async update(@Param(new VerifyDtoPipe("ObjectId", "id")) id: string, @Body(new VerifyDtoPipe("document", "self", GroupDto)) doc: Group) {
     const findIdRes = await this.verifyService.testOneExist(Group.name, "_id", id);
     if (!findIdRes) _403("数据不存在");
     if (Object.keys(doc).every((item) => doc[item].toString() === findIdRes[item].toString())) _403("无需更新");

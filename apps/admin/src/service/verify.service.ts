@@ -10,34 +10,18 @@ export class VerifyService {
   }
   // 检查单个是否存在
   async testOneExist(callName: string, key: string, val: any) {
-    return await this.models[callName]
-      .findOne({
-        [key]: val,
-      })
-      .exec();
+    return await this.models[callName].findOne({ [key]: val }).exec();
   }
   // 检查是否全部存在
   async testAllExist(callName: string, key: string, valArr: any[]) {
     const resNum = await this.models[callName]
-      .find({
-        [key]: { $in: valArr },
-      })
+      .find({ [key]: { $in: valArr } })
       .countDocuments()
       .exec();
-    if (resNum === valArr.length) {
-      // 全部存在
-      return true;
-    } else {
-      // 不是全部存在
-      return false;
-    }
+    return resNum === valArr.length;
   }
   // 检查，是否有任意一个存在
   async testInOneExists(callName: string, key: string, valArr: any[]) {
-    return await this.models[callName]
-      .findOne({
-        [key]: { $in: valArr },
-      })
-      .exec();
+    return await this.models[callName].findOne({ [key]: { $in: valArr } }).exec();
   }
 }
