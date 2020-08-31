@@ -13,13 +13,10 @@ export class SettingController {
     return this.extraService.get(path);
   }
   // 更改设置
-  @ApiBody({
-    type: object,
-  })
   @Post("set")
   setSetting(@Body() body) {
     const { path, value } = body;
-    if (path) return new BadRequestException("路径错误");
+    if (!path) return new BadRequestException("路径错误");
     return this.extraService.set(path, value);
   }
   // 删除某一个键值对

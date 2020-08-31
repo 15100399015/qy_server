@@ -30,6 +30,7 @@ export class ExtraService {
   }
   // 设置文件内容
   async set(path: string, value: any) {
+    console.log("触发");
     const fliePath = await S(this.SETTINGFILEPATH, this.SETTINGFILENAME);
     const newSettingStr = JSON.stringify(set(JSON.parse(readFileSync(fliePath).toString()), path, value));
     const newSetting = await new Promise((resolve, reject) => {
