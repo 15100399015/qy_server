@@ -25,7 +25,6 @@ export class ExtraService {
   async get(path?: string) {
     const fliePath = await S(this.SETTINGFILEPATH, this.SETTINGFILENAME);
     const fileData = JSON.parse(readFileSync(fliePath).toString());
-    console.log(path);
     if (path) return get(fileData, path, undefined);
     return fileData;
   }
@@ -39,6 +38,6 @@ export class ExtraService {
         return resolve(JSON.parse(readFileSync(fliePath).toString()));
       });
     });
-    return newSetting;
+    return get(newSetting, path, undefined);
   }
 }
