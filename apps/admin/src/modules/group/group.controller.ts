@@ -17,6 +17,8 @@ import { GroupService } from "./group.service";
   decorators: [Roles("admin")],
   routes: { findAll: true, findOne: true },
 })
+
+
 @Controller("group")
 export class GroupController {
   constructor(private readonly groupService: GroupService, private readonly verifyService: VerifyService, @InjectModel(Group.name) private readonly model: Model<Group>) {}
