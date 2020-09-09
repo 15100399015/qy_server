@@ -43,6 +43,7 @@ export class GroupController {
     if (testBind !== true) _403(`请先清除${testBind}模块下的属于该组的内容`);
     return this.model.findByIdAndDelete(id).exec().catch(insideErr);
   }
+
   @Roles("admin")
   @Put("changStatus/:id")
   async changStatus(@Param(new VerifyDtoPipe("ObjectId", "id")) id: string, @Body() body) {
