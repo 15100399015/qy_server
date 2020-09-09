@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsString, Length, IsBoolean, IsInt, Min, IsHexColor, IsDefined } from "class-validator";
 
 export class GroupDto {
-  @ApiProperty({ description: "组名字" })
+  @ApiProperty({ description: "链接组名字" })
   @IsDefined({ groups: ["create"] })
   @IsString({ always: true })
   @Length(2, 10, { always: true })
