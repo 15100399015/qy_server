@@ -110,7 +110,11 @@
       "@libs/common/(.*)": "<rootDir>/libs/common/src/$1",
       "@libs/common": "<rootDir>/libs/common/src",
       "@lib/upload/(.*)": "<rootDir>/libs/upload/src/$1",
-      "@lib/upload": "<rootDir>/libs/upload/src"
+      "@lib/upload": "<rootDir>/libs/upload/src",
+      "@lib/configure/(.*)": "<rootDir>/libs/configure/src/$1",
+      "@lib/configure": "<rootDir>/libs/configure/src",
+      "@lib/database/(.*)": "<rootDir>/libs/database/src/$1",
+      "@lib/database": "<rootDir>/libs/database/src"
     }
   }
 }

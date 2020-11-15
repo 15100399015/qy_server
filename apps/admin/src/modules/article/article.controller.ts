@@ -1,13 +1,15 @@
 import { Controller } from "@nestjs/common";
-import { Article } from "@libs/db/schemas";
-import { Crud } from "../../decorator/crud";
+import { Article } from "@lib/database/schemas";
+import { Crud } from "@admin/decorator/crud";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
-import { ApiTags } from "@nestjs/swagger";
 
-@ApiTags("文章")
+// 文章
 @Crud({
   model: Article,
+  routes: {
+    find: true,
+  },
 })
 @Controller("article")
 export class ArticleController {

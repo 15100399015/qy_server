@@ -14,15 +14,15 @@
     "paths": {
       "@admin/*": ["apps/admin/src/*"],
       "@server/*": ["apps/server/src/*"],
-      "@libs/db": ["libs/db/src"],
-      "@libs/db/*": ["libs/db/src/*"],
-      "@libs/config": ["libs/config/src"],
-      "@libs/config/*": ["libs/config/src/*"],
-      "@libs/common": ["libs/common/src"],
-      "@libs/common/*": ["libs/common/src/*"],
+      "@lib/common": ["libs/common/src"],
+      "@lib/common/*": ["libs/common/src/*"],
       "@lib/upload": ["libs/upload/src"],
       "@lib/upload/*": ["libs/upload/src/*"],
-      "@lib/util/*": ["libs/util/*"]
+      "@lib/configure": ["libs/configure/src"],
+      "@lib/configure/*": ["libs/configure/src/*"],
+      "@lib/database": ["libs/database/src"],
+      "@lib/database/*": ["libs/database/src/*"],
+      "@util/*": ["util/*"]
     }
   }
 }

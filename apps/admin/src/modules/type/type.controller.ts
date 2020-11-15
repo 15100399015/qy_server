@@ -1,106 +1,87 @@
 import { Controller, Post, Delete, Put, Param, Body, Get } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
-import { Type, Group } from "@libs/db/schemas";
+import { Type } from "@lib/database/schemas";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Roles } from "@admin/decorator/roles.decorator";
-import { VerifyService } from "@admin/service/verify.service";
-import { VerifyDtoPipe } from "@admin/pipe/verify.dto.pipe";
-import { TypeDto } from "./type.dto";
-import { _403, _500, _404, insideErr } from "@lib/util/HttpExceptionCode";
+import { VerifyDtoPipe } from "@admin/pipe/verify-dto.pipe";
+import { TypeCreateDto, TypeUpDateDto } from "./type.dto";
+import { _403, _500, _404 } from "@util/concise-exception";
+import { ADMINRULES } from "@admin/constant";
 
-@ApiTags("分类")
+// 分类
 @Controller("type")
 export class TypeController {
-  constructor(private readonly verifyService: VerifyService, @InjectModel(Type.name) private readonly model: Model<Type>) {}
-  @Roles("admin")
-  @Get("findType1/:mid")
-  async findType1(@Param("mid") mid: number) {
-    return this.model.find({ type_pid: "", type_mid: mid }).exec();
-  }
-  // 无条件获取所有信息
-  @Roles("admin")
-  @Get("findAll")
-  async finAll() {
-    return this.model.find({ type_pid: "" }).populate("children").exec();
-  }
-  // 根据id获取单个文档
-  @Roles("admin")
+  constructor(@InjectModel(Type.name) private readonly model: Model<Type>) {}
+  // 查找
+  @Roles(ADMINRULES.ROOT_ADMIN)
   @Get("findOne/:id")
-  async findOne(@Param(new VerifyDtoPipe("ObjectId", "id")) id: string) {
-    return this.model.findById(id).exec();
+  async findOne(@Param("id", new VerifyDtoPipe("ObjectId")) id: string) {
+    return this.model.findById(id);
+  }
+  // 根据分类类型查找所有分类
+  @Roles(ADMINRULES.ROOT_ADMIN)
+  @Get("findType/:mid")
+  async findType(@Param("mid") mid: number) {
+    return this.model.find({ type_pid: "", type_mid: mid }).populate("children");
   }
   // 创建一条信息
-  @Roles("admin")
+  @Roles(ADMINRULES.ROOT_ADMIN)
   @Post("create")
-  async create(@Body(new VerifyDtoPipe("document", "self", TypeDto, { groups: ["create"] })) doc: Type) {
-    const { group_ids, type_pid, type_name, type_mid } = doc;
-    const findNameRes = await this.verifyService.testOneExist(Type.name, "type_name", type_name);
-    const findPIdRes = !!type_pid ? await this.verifyService.testOneExist(Type.name, "_id", type_pid) : false;
-    const findGroupRes = await this.verifyService.testAllExist(Group.name, "_id", group_ids);
-    // 检查分类名是否重复
+  async create(@Body(new VerifyDtoPipe("document", TypeCreateDto)) doc: Type) {
+    const { type_pid, type_name, type_mid } = doc;
+    const findNameRes = await this.model.findOne({ type_name });
     if (findNameRes) _403("分类名称重复");
-    // 父分类是否存在
-    if (type_pid !== undefined && type_pid !== "" && !findPIdRes) _403("顶级分类不存在");
-    // 检查权限组是否存在
-    if (group_ids !== undefined && group_ids.length !== 0 && !findGroupRes) _403("某些权限组不存在");
-    // 子分类和父分类类型必须统一
-    if (findPIdRes !== false && type_mid !== findPIdRes.type_mid) _403("子分类类型必须和父分类类型相同");
-    return this.model.create(doc).catch(insideErr);
+    if (type_pid !== undefined) {
+      const findByIdRes = await this.model.findById(type_pid);
+      if (!findByIdRes) _403("父分类不存在");
+      if (findByIdRes.type_pid !== "") _403("父分类不能是子分类");
+      if (type_mid !== findByIdRes.type_mid) _403("子分类类型必须和父分类类型相同");
+    }
+    return this.model.create(doc);
   }
-  @Roles("admin")
+  // 更新
+  @Roles(ADMINRULES.ROOT_ADMIN)
   @Put("update/:id")
-  async update(@Param(new VerifyDtoPipe("ObjectId", "id")) id: string, @Body(new VerifyDtoPipe("document", "self", TypeDto, { groups: ["update"] })) doc: Type) {
-    const { group_ids, type_pid, type_name, type_mid } = doc;
-    const findNameRes = await this.verifyService.testOneExist(Type.name, "type_name", type_name);
-    const findSubTypeRes = await this.verifyService.testOneExist(Type.name, "type_pid", id);
-    const findPIdRes = !!type_pid ? await this.verifyService.testOneExist(Type.name, "_id", type_pid) : false;
-    const findIdRes = await this.verifyService.testOneExist(Type.name, "_id", id);
-    const findGroupRes = await this.verifyService.testAllExist(Group.name, "_id", group_ids);
+  async update(@Param("id", new VerifyDtoPipe("ObjectId")) id: string, @Body(new VerifyDtoPipe("document", TypeUpDateDto)) doc: Type) {
+    const findIdRes = await this.model.findById(id);
     if (!findIdRes) _403("数据不存在");
-    // 检查是否需要更新
     if (Object.keys(doc).every((item) => String(doc[item]) === String(findIdRes[item]))) _403("无需更新");
-    // 检查分类名是否重复
-    if (findNameRes && String(id) !== String(findNameRes._id)) _403("分类名重复");
-    // 父分类是否存在
-    if (type_pid !== undefined && type_pid !== "" && !findPIdRes) _403("顶级分类不存在");
-    // 检查父分类是否是二级分类
-    if (findPIdRes !== false && findPIdRes.type_pid !== "") _403("不能选择子分类作为顶级分类");
-    // 检查权限组是否全部存在
-    if (group_ids !== undefined && group_ids.length !== 0 && !findGroupRes) _403("某些权限组不存在");
-    // 不能把自己当作自己的父分类
-    if (String(type_pid) === String(findIdRes._id)) _403("父分类不能选择自己");
-    // 父分类在有子分类的情况下不能进行转移
-    if (findIdRes.type_pid !== type_pid && findSubTypeRes) _403("请先清理子分类");
-    // 分类被创建之后分类类型是不能被更改的
-    if (findIdRes.type_mid !== type_mid) _403("分类创建之后，分类类型不可更改");
-    return this.model.findByIdAndUpdate(id, doc).exec().catch(insideErr);
+    if (doc.type_name !== findIdRes.type_name) {
+      const findNameRes = await this.model.findOne({ type_name: doc.type_name });
+      if (findNameRes) _403("分类名重复");
+    }
+    return this.model.findByIdAndUpdate(id, {
+      type_name: doc.type_name,
+      type_sub: doc.type_sub,
+      type_sort: doc.type_sort,
+      type_status: doc.type_status,
+      type_logo: doc.type_logo,
+      type_pic: doc.type_pic,
+      type_extend: doc.type_extend,
+    });
   }
   // 删除
-  @Roles("admin")
+  @Roles(ADMINRULES.ROOT_ADMIN)
   @Delete("delete/:id")
-  async delete(@Param(new VerifyDtoPipe("ObjectId", "id")) id: string) {
-    const findSubTypeRes = await this.verifyService.testOneExist(Type.name, "type_pid", id);
+  async delete(@Param("id", new VerifyDtoPipe("ObjectId")) id: string) {
+    const findSubTypeRes = await this.model.findOne({ type_pid: id });
     if (findSubTypeRes) _403("请先清理子分类");
-    return this.model.findByIdAndDelete(id).exec().catch(insideErr);
+    return this.model.findByIdAndDelete(id);
   }
   // 删除多个
-  @Roles("admin")
+  @Roles(ADMINRULES.ROOT_ADMIN)
   @Delete("deleteMany")
   async deleteMany(@Body() _idArr: string[]) {
-    const findSubTypeRes = await this.verifyService.testInOneExists(Type.name, "type_pid", _idArr);
+    const findSubTypeRes = await this.model.findOne({ type_pid: { $in: _idArr } });
     if (findSubTypeRes) _403("请先清理子分类");
-    return this.model
-      .deleteMany({ _id: { $in: _idArr } })
-      .exec()
-      .catch(insideErr);
+    return this.model.deleteMany({ _id: { $in: _idArr } });
   }
   // 更新状态
-  @Roles("admin")
+  @Roles(ADMINRULES.ROOT_ADMIN)
   @Put("changStatus/:id")
-  async changStatus(@Param(new VerifyDtoPipe("ObjectId", "id")) id: string, @Body() body) {
-    const findIdRes = await this.verifyService.testOneExist(Type.name, "_id", id);
+  async changStatus(@Param("id", new VerifyDtoPipe("ObjectId")) id: string, @Body() body) {
+    const findIdRes = await this.model.findById(id);
     if (!findIdRes) _403("分类不存在");
-    return this.model.findByIdAndUpdate(id, { type_status: body.status }).catch(insideErr);
+    return this.model.findByIdAndUpdate(id, { type_status: !findIdRes.type_status });
   }
 }

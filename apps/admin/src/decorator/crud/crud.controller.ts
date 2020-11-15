@@ -3,7 +3,7 @@ import { Get, Param, Post, Put, Delete, Body } from "@nestjs/common";
 import { CrudQuery, ICrudQuery } from "./crud-query.decorator";
 import { get } from "lodash";
 import { CrudOptionsWithModel } from "./crud.interface";
-import { insideErr } from "@lib/util/httpExceptionCode";
+import { _500 } from "@util/concise-exception";
 
 export class CrudPlaceholderDto {}
 export class CrudController {
@@ -29,25 +29,25 @@ export class CrudController {
   @Get("findOne")
   async findOne(@CrudQuery("query") query: any) {
     const { where = {}, select = undefined } = query;
-    return this.model.findOne(where).select(select).exec();
+    return this.model.findOne(where).select(select);
   }
   // 查找所有
   @Get("findAll")
   async findAll(@CrudQuery("query") query) {
     const { where = {}, select = undefined } = query;
-    return this.model.find().where(where).select(select).exec();
+    return this.model.find().where(where).select(select);
   }
   // 创建数据
   @Post("create")
   async create(@Body() body: CrudPlaceholderDto) {
     const transform = get(this.crudOptions, "routes.create.transform");
     if (transform) body = transform(body);
-    return this.model.create(body).catch(insideErr);
+    return this.model.create(body);
   }
   // 插入多个
   @Post("insertMany")
   async insertMany(@Body() body: CrudPlaceholderDto) {
-    return this.model.insertMany(body, { ordered: false, rawResult: false }).catch(insideErr);
+    return this.model.insertMany(body, { ordered: false, rawResult: false });
   }
   // 根据id更新一条数据
   @Put("update/:id")
@@ -56,21 +56,21 @@ export class CrudController {
     if (transform) {
       body = transform(body);
     }
-    return this.model.findByIdAndUpdate(id, body, { new: true, upsert: false, runValidators: true, context: "query" }).exec().catch(insideErr);
+    return this.model.findByIdAndUpdate(id, body, { new: true, upsert: false, runValidators: true, context: "query" });
   }
   // 更新多个
   @Put("updateMany")
   updateMany(@Body("conditions") conditions: any, @Body("doc") doc: CrudPlaceholderDto) {
-    return this.model.updateMany(conditions, doc).exec().catch(insideErr);
+    return this.model.updateMany(conditions, doc);
   }
   // 根据id删除一条数据
   @Delete("delete/:id")
   delete(@Param("id") id: string) {
-    return this.model.findByIdAndRemove(id).exec(insideErr);
+    return this.model.findByIdAndRemove(id);
   }
   // 删除多个
   @Delete("deleteMany")
   deleteMany(@Body("conditions") conditions: CrudPlaceholderDto) {
-    return this.model.deleteMany(conditions).exec().catch(insideErr);
+    return this.model.deleteMany(conditions);
   }
 }

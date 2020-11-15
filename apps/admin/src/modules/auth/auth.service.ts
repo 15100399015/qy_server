@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Admin } from "@libs/db/schemas/admin.schema";
+import { Admin } from "@lib/database/schemas/admin.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 
@@ -17,10 +17,6 @@ export class AuthService {
   // 清除token
   removeToken(_id: string) {
     return this.model.findByIdAndUpdate(_id, { admin_token: "" }).exec();
-  }
-  // 重置密码
-  resetPwd(_id: string, newPwd: string) {
-    return this.model.findByIdAndUpdate(_id, { admin_pwd: newPwd, admin_token: "" }).exec();
   }
   // 获取信息
   getInfo(_id: string) {

@@ -1,6 +1,6 @@
 import { createParamDecorator, ExecutionContext } from "@nestjs/common";
 import { Request } from "express";
-import { _403 } from "@lib/util/httpExceptionCode";
+import { _403 } from "@util/concise-exception";
 
 export class ICrudQuery {
   where?: any;

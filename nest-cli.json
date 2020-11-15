@@ -26,24 +26,6 @@
         "tsConfigPath": "apps/admin/tsconfig.app.json"
       }
     },
-    "db": {
-      "type": "library",
-      "root": "libs/db",
-      "entryFile": "index",
-      "sourceRoot": "libs/db/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/db/tsconfig.lib.json"
-      }
-    },
-    "config": {
-      "type": "library",
-      "root": "libs/config",
-      "entryFile": "index",
-      "sourceRoot": "libs/config/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/config/tsconfig.lib.json"
-      }
-    },
     "common": {
       "type": "library",
       "root": "libs/common",
@@ -60,6 +42,24 @@
       "sourceRoot": "libs/upload/src",
       "compilerOptions": {
         "tsConfigPath": "libs/upload/tsconfig.lib.json"
+      }
+    },
+    "configure": {
+      "type": "library",
+      "root": "libs/configure",
+      "entryFile": "index",
+      "sourceRoot": "libs/configure/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/configure/tsconfig.lib.json"
+      }
+    },
+    "database": {
+      "type": "library",
+      "root": "libs/database",
+      "entryFile": "index",
+      "sourceRoot": "libs/database/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/database/tsconfig.lib.json"
       }
     }
   }

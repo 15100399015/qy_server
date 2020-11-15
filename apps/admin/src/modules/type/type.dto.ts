@@ -1,38 +1,69 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsInt, IsMongoId, IsBoolean, IsArray, IsUrl, IsString, IsDefined, Length } from "class-validator";
+import { IsEnum, IsInt, IsBoolean, IsUrl, IsString, IsOptional } from "class-validator";
 
-export class TypeDto {
-  @ApiProperty({ description: "分类类型1影片,2文章" })
-  @IsDefined({ groups: ["create"] })
-  @IsEnum([1, 2], { always: true })
+export class TypeCreateDto {
+  // 分类类型1影片,2文章
+  @IsEnum([1, 2])
   type_mid: number;
-  @ApiProperty({ description: "分类名称" })
-  @IsDefined({ groups: ["create"] })
-  @IsString({ always: true })
-  @Length(2, 10, { always: true })
+  // 分类名称
+  @IsString()
   type_name: string;
-  @ApiProperty({ description: "别名" })
-  @IsString({ always: true })
-  type_en: string;
-  @ApiProperty({ description: "排序" })
-  @IsInt({ always: true })
+  // 别名
+  @IsOptional()
+  @IsString()
+  type_sub: string;
+  // 排序
+  @IsOptional()
+  @IsInt()
   type_sort: number;
-  @ApiProperty({ description: "父级分类id" })
-  @IsString({ always: true })
+  // 父级分类id
+  @IsOptional()
+  @IsString()
   type_pid: string;
-  @ApiProperty({ description: "分类状态" })
-  @IsBoolean({ always: true })
+  // 分类状态
+  @IsOptional()
+  @IsBoolean()
   type_status: boolean;
-  @ApiProperty({ description: "所属用户组,id数组" })
-  @IsArray({ always: true })
-  group_ids: string[];
-  @ApiProperty({ description: "分类图标" })
-  @IsUrl({}, { always: true })
+  // 分类图标
+  @IsOptional()
+  @IsUrl({})
   type_logo: string;
-  @ApiProperty({ description: "分类封面" })
-  @IsUrl({}, { always: true })
+  // 分类封面
+  @IsOptional()
+  @IsUrl({})
   type_pic: string;
-  @ApiProperty({ description: "扩展信息" })
-  @IsString({ always: true })
+  // 扩展信息
+  @IsOptional()
+  @IsString()
+  type_extend: string;
+}
+
+export class TypeUpDateDto {
+  // 分类名称
+  @IsOptional()
+  @IsString()
+  type_name: string;
+  // 别名
+  @IsOptional()
+  @IsString()
+  type_sub: string;
+  // 排序
+  @IsOptional()
+  @IsInt()
+  type_sort: number;
+  // 分类状态
+  @IsOptional()
+  @IsBoolean()
+  type_status: boolean;
+  // 分类图标
+  @IsOptional()
+  @IsUrl()
+  type_logo: string;
+  // 分类封面
+  @IsOptional()
+  @IsUrl()
+  type_pic: string;
+  // 扩展信息
+  @IsOptional()
+  @IsString()
   type_extend: string;
 }
