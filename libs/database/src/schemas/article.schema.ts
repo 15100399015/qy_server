@@ -6,10 +6,10 @@ import { Document, SchemaTypes } from "mongoose";
 export class Article extends Document {
   // 一级分类id
   @Prop({
-    type: SchemaTypes.Number,
+    type: SchemaTypes.String,
     required: true,
   })
-  type_id: number;
+  type_id: string;
   // 文章名字
   @Prop({
     type: SchemaTypes.String,
@@ -170,4 +170,4 @@ export class Article extends Document {
 }
 
 export const ArticleSchema = SchemaFactory.createForClass(Article);
-export const ArticleDocName = "qy_" + Article.name.toLowerCase();
+export const ArticleDocName = Article.name.toLowerCase();

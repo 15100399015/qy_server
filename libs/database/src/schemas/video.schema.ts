@@ -6,11 +6,11 @@ import { Document, SchemaTypes } from "mongoose";
 export class Video extends Document {
   //顶级分类id
   @Prop({
-    type: SchemaTypes.Number,
+    type: SchemaTypes.String,
     index: true,
     required: true,
   })
-  type_id: number;
+  type_id: string;
   //影片名称
   @Prop({
     type: SchemaTypes.String,
@@ -276,4 +276,4 @@ export class Video extends Document {
 }
 
 export const VideoSchema = SchemaFactory.createForClass(Video);
-export const VideoDocName = "qy_" + Video.name.toLowerCase();
+export const VideoDocName = Video.name.toLowerCase();

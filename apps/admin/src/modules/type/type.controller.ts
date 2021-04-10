@@ -1,17 +1,45 @@
 import { Controller, Post, Delete, Put, Param, Body, Get } from "@nestjs/common";
-import { Type } from "@lib/database/schemas";
+import { Type, Video, Article } from "@lib/database/schemas";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Roles } from "@admin/decorator/roles.decorator";
 import { VerifyDtoPipe } from "@admin/pipe/verify-dto.pipe";
 import { TypeCreateDto, TypeUpDateDto } from "./type.dto";
-import { _403, _500, _404 } from "@util/concise-exception";
-import { ADMINRULES } from "@admin/constant";
+import { _403, _500, _404, _tcrs } from "@util/concise-exception";
+import { ADMINRULES, REULTCODES } from "@admin/constant";
 
 // 分类
 @Controller("type")
 export class TypeController {
-  constructor(@InjectModel(Type.name) private readonly model: Model<Type>) {}
+  constructor(
+    @InjectModel(Type.name) private readonly model: Model<Type>,
+    @InjectModel(Type.name) private readonly video_model: Model<Video>,
+    @InjectModel(Type.name) private readonly acticle_model: Model<Article>
+  ) {}
+  // 根据分类类型查找所有分类
+  @Roles(ADMINRULES.ROOT_ADMIN)
+  @Get("findAllTopLevel")
+  async findAllTopLevel() {
+    return this.model.find({ type_pid: "" }).populate("children");
+  }
+  // 根据分类类型查找所有分类
+  @Roles(ADMINRULES.ROOT_ADMIN)
+  @Get("findChildren/:id")
+  async findChildren(@Param("id", new VerifyDtoPipe("ObjectId")) type_pid: string) {
+    return this.model.find({ type_pid });
+  }
+  // 根据分类类型查找所有分类
+  @Roles(ADMINRULES.ROOT_ADMIN)
+  @Get("findContentNumber/:id")
+  async findContentNumber(@Param("id", new VerifyDtoPipe("ObjectId")) type_id: string) {
+    let findByIdRes = await this.model.findById(type_id);
+    if (findByIdRes.type_mid === 1) {
+      return this.video_model.find({ type_id }).countDocuments();
+    }
+    if (findByIdRes.type_mid === 2) {
+      return this.acticle_model.find({ type_id }).countDocuments();
+    }
+  }
   // 查找
   @Roles(ADMINRULES.ROOT_ADMIN)
   @Get("findOne/:id")
@@ -20,9 +48,9 @@ export class TypeController {
   }
   // 根据分类类型查找所有分类
   @Roles(ADMINRULES.ROOT_ADMIN)
-  @Get("findType/:mid")
-  async findType(@Param("mid") mid: number) {
-    return this.model.find({ type_pid: "", type_mid: mid }).populate("children");
+  @Get("findTopLevel/:mid")
+  async findTopLevel(@Param("mid") type_mid: number) {
+    return this.model.find({ type_pid: "", type_mid }).populate("video_num");
   }
   // 创建一条信息
   @Roles(ADMINRULES.ROOT_ADMIN)
@@ -30,12 +58,12 @@ export class TypeController {
   async create(@Body(new VerifyDtoPipe("document", TypeCreateDto)) doc: Type) {
     const { type_pid, type_name, type_mid } = doc;
     const findNameRes = await this.model.findOne({ type_name });
-    if (findNameRes) _403("分类名称重复");
-    if (type_pid !== undefined) {
+    if (findNameRes) throw _tcrs(REULTCODES.DATA_ALREADY_EXISTED, "分类名称重复");
+    if (type_pid) {
       const findByIdRes = await this.model.findById(type_pid);
-      if (!findByIdRes) _403("父分类不存在");
-      if (findByIdRes.type_pid !== "") _403("父分类不能是子分类");
-      if (type_mid !== findByIdRes.type_mid) _403("子分类类型必须和父分类类型相同");
+      if (!findByIdRes) throw _tcrs(REULTCODES.DATA_NOT_FOUND, "父分类不存在");
+      if (findByIdRes.type_pid !== "") throw _tcrs(REULTCODES.DATA_IS_WRONG, "父分类不能是子分类");
+      if (type_mid !== findByIdRes.type_mid) throw _tcrs(REULTCODES.DATA_IS_WRONG, "子分类类型必须和父分类类型相同");
     }
     return this.model.create(doc);
   }
@@ -44,11 +72,11 @@ export class TypeController {
   @Put("update/:id")
   async update(@Param("id", new VerifyDtoPipe("ObjectId")) id: string, @Body(new VerifyDtoPipe("document", TypeUpDateDto)) doc: Type) {
     const findIdRes = await this.model.findById(id);
-    if (!findIdRes) _403("数据不存在");
-    if (Object.keys(doc).every((item) => String(doc[item]) === String(findIdRes[item]))) _403("无需更新");
+    if (!findIdRes) throw _tcrs(REULTCODES.DATA_NOT_FOUND, "数据不存在");
+    if (Object.keys(doc).every((item) => String(doc[item]) === String(findIdRes[item]))) throw _tcrs(REULTCODES.DATA_NO_NEED_UPDATE, "无需更新");
     if (doc.type_name !== findIdRes.type_name) {
       const findNameRes = await this.model.findOne({ type_name: doc.type_name });
-      if (findNameRes) _403("分类名重复");
+      if (findNameRes) throw _tcrs(REULTCODES.DATA_ALREADY_EXISTED, "分类名称重复");
     }
     return this.model.findByIdAndUpdate(id, {
       type_name: doc.type_name,
@@ -65,23 +93,25 @@ export class TypeController {
   @Delete("delete/:id")
   async delete(@Param("id", new VerifyDtoPipe("ObjectId")) id: string) {
     const findSubTypeRes = await this.model.findOne({ type_pid: id });
-    if (findSubTypeRes) _403("请先清理子分类");
-    return this.model.findByIdAndDelete(id);
+    if (findSubTypeRes) throw _tcrs(REULTCODES.DATA_IS_WRONG, "请先清理子分类");
+    await this.model.findByIdAndDelete(id);
+    return "success";
   }
   // 删除多个
   @Roles(ADMINRULES.ROOT_ADMIN)
   @Delete("deleteMany")
   async deleteMany(@Body() _idArr: string[]) {
     const findSubTypeRes = await this.model.findOne({ type_pid: { $in: _idArr } });
-    if (findSubTypeRes) _403("请先清理子分类");
-    return this.model.deleteMany({ _id: { $in: _idArr } });
+    if (findSubTypeRes) throw _tcrs(REULTCODES.DATA_IS_WRONG, "请先清理子分类");
+    await this.model.deleteMany({ _id: { $in: _idArr } });
+    return "success";
   }
   // 更新状态
   @Roles(ADMINRULES.ROOT_ADMIN)
-  @Put("changStatus/:id")
-  async changStatus(@Param("id", new VerifyDtoPipe("ObjectId")) id: string, @Body() body) {
+  @Put("switchStatus/:id")
+  async switchStatus(@Param("id", new VerifyDtoPipe("ObjectId")) id: string, @Body() body) {
     const findIdRes = await this.model.findById(id);
     if (!findIdRes) _403("分类不存在");
-    return this.model.findByIdAndUpdate(id, { type_status: !findIdRes.type_status });
+    return this.model.findByIdAndUpdate(id, { type_status: !findIdRes.type_status }).select("type_status");
   }
 }

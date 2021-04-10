@@ -1,8 +1,6 @@
 import { Module } from "@nestjs/common";
 import { MulterModule } from "@nestjs/platform-express";
 import { aliossStorage, fileFilter } from "./storage/ali-oss";
-// AccessKey ID LTAI4G9MAwv3CdvFskBENHLC
-// AccessKey Secret baeyDFZraajguOt2vvkj2QMvVrciwA
 @Module({
   imports: [
     MulterModule.registerAsync({
@@ -10,9 +8,9 @@ import { aliossStorage, fileFilter } from "./storage/ali-oss";
         storage: aliossStorage({
           config: {
             region: "oss-cn-beijing",
-            accessKeyId: "LTAI4G9MAwv3CdvFskBENHLC",
-            accessKeySecret: "baeyDFZraajguOt2vvkj2QMvVrciwA",
-            bucket: "qycms",
+            accessKeyId: "LTAI4GB4G5uASyxBBJStq4vN",
+            accessKeySecret: "B1gzNbMeU4KJ4K5eH9ZU3SnKkdS1Fi",
+            bucket: "liangx-gallery",
           },
         }),
         fileFilter,

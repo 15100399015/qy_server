@@ -1,6 +1,7 @@
 import { Controller, Post, Delete, Body, Put, Param, Get } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { compareSync } from "bcryptjs";
 
 import { Admin } from "@lib/database/schemas";
 
@@ -23,7 +24,13 @@ export class AdminController {
     const { INIT_ROOT_ADMIN_USER: admin_name, INIT_ROOT_ADMIN_PASS: admin_pwd, INIT_SECRET_KEY: init_secret_key } = process.env;
     if (init_secret_key !== secret_key) throw _404("router is not find");
     if (await this.model.findOne({ admin_roles: ADMINRULES.ROOT_ADMIN })) throw _404("router is not find");
-    return this.model.create({ admin_name, admin_pwd, admin_roles: ADMINRULES.ROOT_ADMIN, admin_status: true });
+    await this.model.create({
+      admin_name,
+      admin_pwd,
+      admin_roles: ADMINRULES.ROOT_ADMIN,
+      admin_status: true,
+    });
+    return "success";
   }
   // 查找管理员
   @Roles(ADMINRULES.ROOT_ADMIN)
@@ -33,7 +40,13 @@ export class AdminController {
     const skip = (page - 1) * limit;
     const data = await this.model.find().select(select).where(where).skip(skip).limit(limit).sort(sort).exec();
     const total = await this.model.countDocuments(where);
-    return { total: total, data: data, lastPage: Math.ceil(total / limit), currentPage: page, limit: data.length };
+    return {
+      total: total,
+      data: data,
+      lastPage: Math.ceil(total / limit),
+      currentPage: page,
+      limit: data.length,
+    };
   }
   // 创建管理员
   @Roles(ADMINRULES.ROOT_ADMIN)
@@ -48,38 +61,47 @@ export class AdminController {
   @Roles(ADMINRULES.ROOT_ADMIN)
   @Delete("delete/:id")
   async delete(@Param("id", new VerifyDtoPipe("ObjectId")) id: string) {
-    const findIdRes: Admin = await this.model.findById(id).exec();
+    const findIdRes: Admin = await this.model.findById(id);
     if (!findIdRes || findIdRes.admin_roles === ADMINRULES.ROOT_ADMIN) throw _tcrs(REULTCODES.USER_NOT_EXIST, "用户不存在");
-    return this.model.findByIdAndDelete(id);
+    await this.model.findByIdAndDelete(id);
+    return "success";
   }
-
   // 切换管理员状态
   @Roles(ADMINRULES.ROOT_ADMIN)
   @Put("switchStatus/:id")
   async switchStatus(@Param("id", new VerifyDtoPipe("ObjectId")) id: string) {
-    const findIdRes: Admin = await this.model.findById(id).exec();
+    const findIdRes: Admin = await this.model.findById(id);
     if (!findIdRes || findIdRes.admin_roles === ADMINRULES.ROOT_ADMIN) throw _tcrs(REULTCODES.USER_NOT_EXIST, "用户不存在");
-    return this.model.findByIdAndUpdate(id, { admin_status: !findIdRes.admin_status }, { new: true });
+    return this.model.findByIdAndUpdate(id, { admin_status: !findIdRes.admin_status }, { new: true }).select("admin_status");
   }
   // 更改密码
   @Roles(ADMINRULES.__ALL_ADMIN)
-  @Put("resetPwd")
-  async resetPwd(@UserInfo("_id") id: string, @Body("newPwd") admin_pwd) {
-    const findIdRes = await this.model.findById(id);
-    if (!findIdRes || findIdRes.admin_roles === ADMINRULES.ROOT_ADMIN) throw _tcrs(REULTCODES.USER_NOT_EXIST, "用户不存在");
-    await this.model.findByIdAndUpdate(id, { admin_pwd, admin_token: "" });
-    return { data: "success" };
+  @Put("resetPssword")
+  async resetPwd(
+    @UserInfo("_id") id: string,
+    @UserInfo("admin_pwd") admin_pwd: string,
+    @Body("now_password") now_password: string,
+    @Body("new_password") new_password: string
+  ) {
+    if (!compareSync(String(now_password), String(admin_pwd))) {
+      throw _tcrs(REULTCODES.USER_ACCOUNT_ERROR, "密码错误");
+    }
+    await this.model.findByIdAndUpdate(id, {
+      admin_pwd: new_password,
+      admin_token: "",
+    });
+    return "success";
   }
   // 修改个人邮箱
   @Roles(ADMINRULES.__ALL_ADMIN)
   @Put("modifyEmail")
   async modifyEmail(@UserInfo("_id") id: string, @Body("email") admin_email: string) {
-    return this.model.findByIdAndUpdate(id, { admin_email }, { new: true });
+    return this.model.findByIdAndUpdate(id, { admin_email }, { new: true }).select("admin_email");
   }
-  // 修改个人邮箱
+  // 修改个人手机号
   @Roles(ADMINRULES.__ALL_ADMIN)
   @Put("modifyPhone")
   async modifyPhone(@UserInfo("_id") id: string, @Body("phone") admin_phone: number) {
-    return this.model.findByIdAndUpdate(id, { admin_phone }, { new: true });
+    return this.model.findByIdAndUpdate(id, { admin_phone }, { new: true }).select("admin_phone");
   }
 }

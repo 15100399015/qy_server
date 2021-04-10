@@ -63,4 +63,4 @@ export class Comment extends Document {
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
-export const CommentDocName = "qy_" + Comment.name.toLowerCase();
+export const CommentDocName = Comment.name.toLowerCase();

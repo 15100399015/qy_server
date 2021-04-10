@@ -22,12 +22,12 @@ export class Topic extends Document {
     default: true,
   })
   topic_status: boolean;
-  // 排序
+  // 推荐值
   @Prop({
     type: SchemaTypes.Number,
     default: 0,
   })
-  topic_sort: number;
+  topic_level: number;
   // 高亮标记颜色
   @Prop({
     type: SchemaTypes.String,
@@ -86,4 +86,4 @@ export class Topic extends Document {
 }
 
 export const TopicSchema = SchemaFactory.createForClass(Topic);
-export const TopicDocName = "qy_" + Topic.name.toLowerCase();
+export const TopicDocName = Topic.name.toLowerCase();

@@ -47,4 +47,4 @@ export class Gbook extends Document {
 }
 
 export const GbookSchema = SchemaFactory.createForClass(Gbook);
-export const GbookDocName = "qy_" + Gbook.name.toLowerCase();
+export const GbookDocName = Gbook.name.toLowerCase();

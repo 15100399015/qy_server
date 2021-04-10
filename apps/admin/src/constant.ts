@@ -2,6 +2,8 @@
 export class ADMINRULES {
   public static ROOT_ADMIN = "rule_root_admin"; // 根管理员
   public static ORDINART_ADMIN = "rule_ordinary_admin"; // 普通管理员
+  public static OBSERVER_ADMIN = "rule_observer_admin"; // 观察者
+  // ......
   public static __ALL_ADMIN = "rule_all_admin"; // 全部
 }
 

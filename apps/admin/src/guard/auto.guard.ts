@@ -47,7 +47,7 @@ export class AuthGuard implements CanActivate {
     // 等于0说明没有设置过期时间，则不去检查是否过期，如果不等于0就去检查是否过期
     if (token.exp !== 0 && token.exp < Math.floor(Date.now() / 1000)) throw _tcrs(REULTCODES.TOKEN_IS_EXPIRED, "token expired");
     // 查找用户
-    const admin = await this.adminModel.findById(token.sub).select("+admin_token");
+    const admin = await this.adminModel.findById(token.sub).select("+admin_token +admin_pwd");
 
     if (!admin) throw _tcrs(REULTCODES.USER_NOT_EXIST, "admin is non-existent");
     if (!admin.admin_token) throw _tcrs(REULTCODES.USER_NOT_LOGGED_IN, "admin not logged on"); // 没有登录

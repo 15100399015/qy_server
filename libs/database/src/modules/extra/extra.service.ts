@@ -16,7 +16,7 @@ let settingObj = null;
 
 try {
   settingObj = JSON.parse(readFileSync(joinSettingFilePath(), "utf8"));
-} catch (error) {
+} catch (err) {
   settingObj = {};
 }
 

@@ -8,18 +8,18 @@ export class AuthService {
   constructor(@InjectModel(Admin.name) private readonly model: Model<Admin>) {}
   // 根据id查找
   findAdminById(_id: string) {
-    return this.model.findById(_id).exec();
+    return this.model.findById(_id);
   }
   // 更新token
   upToken(_id: string, token: string) {
-    return this.model.findByIdAndUpdate(_id, { admin_token: token }).exec();
+    return this.model.findByIdAndUpdate(_id, { admin_token: token });
   }
   // 清除token
   removeToken(_id: string) {
-    return this.model.findByIdAndUpdate(_id, { admin_token: "" }).exec();
+    return this.model.findByIdAndUpdate(_id, { admin_token: "" });
   }
   // 获取信息
   getInfo(_id: string) {
-    return this.model.findById(_id).exec();
+    return this.model.findById(_id);
   }
 }

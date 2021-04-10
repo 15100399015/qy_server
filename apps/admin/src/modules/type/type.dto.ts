@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsBoolean, IsUrl, IsString, IsOptional } from "class-validator";
+import { IsEnum, IsInt, IsBoolean, IsString, IsOptional } from "class-validator";
 
 export class TypeCreateDto {
   // 分类类型1影片,2文章
@@ -25,11 +25,11 @@ export class TypeCreateDto {
   type_status: boolean;
   // 分类图标
   @IsOptional()
-  @IsUrl({})
+  @IsString()
   type_logo: string;
   // 分类封面
   @IsOptional()
-  @IsUrl({})
+  @IsString()
   type_pic: string;
   // 扩展信息
   @IsOptional()
@@ -56,11 +56,11 @@ export class TypeUpDateDto {
   type_status: boolean;
   // 分类图标
   @IsOptional()
-  @IsUrl()
+  @IsString()
   type_logo: string;
   // 分类封面
   @IsOptional()
-  @IsUrl()
+  @IsString()
   type_pic: string;
   // 扩展信息
   @IsOptional()

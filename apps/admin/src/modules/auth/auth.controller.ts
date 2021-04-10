@@ -22,8 +22,14 @@ export class AuthController {
   @Roles(ADMINRULES.__ALL_ADMIN)
   @Get("getInfo")
   async getInfo(@UserInfo("_id") _id: string) {
-    const { admin_roles, admin_name } = await this.authService.getInfo(_id);
-    return { roles: admin_roles, name: admin_name };
+    const { admin_roles, admin_name, admin_phone, admin_email, admin_status } = await this.authService.getInfo(_id);
+    return {
+      roles: admin_roles,
+      name: admin_name,
+      phone: admin_phone,
+      email: admin_email,
+      status: admin_status,
+    };
   }
   // 登出
   @Roles(ADMINRULES.__ALL_ADMIN)

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, SchemaTypes } from "mongoose";
+import { Video } from "./index";
 
 @Schema({ toJSON: { virtuals: true } })
 export class Type extends Document {
@@ -57,15 +58,24 @@ export class Type extends Document {
 }
 
 export const TypeSchema = SchemaFactory.createForClass(Type);
-export const TypeDocName = "qy_" + Type.name.toLowerCase();
+export const TypeDocName = Type.name.toLowerCase();
+
 TypeSchema.virtual("children", {
   ref: Type.name,
   localField: "_id",
   foreignField: "type_pid",
 });
-TypeSchema.virtual("type_mold").get(function (this: Type) {
-  return {
-    name: this.type_mid === 1 ? "视频" : this.type_mid === 2 && "文章",
-    type_mid: this.type_mid,
-  };
+
+TypeSchema.virtual("hasChildren", {
+  ref: Type.name,
+  localField: "_id",
+  foreignField: "type_pid",
+  count: true,
+});
+
+TypeSchema.virtual("video_num", {
+  ref: Video.name,
+  localField: "_id",
+  foreignField: "type_id",
+  count: true,
 });
