@@ -9,4 +9,5 @@ import { NestExpressApplication } from "@nestjs/platform-express";
   // 静态目录
   app.useStaticAssets("upload", { prefix: "/uploads" });
   app.listen(process.env.ADMIN_PORT);
+  console.log("端口:" + process.env.ADMIN_PORT);
 })();
