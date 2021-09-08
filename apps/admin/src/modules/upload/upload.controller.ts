@@ -12,4 +12,5 @@ export class UploadController {
   upload(@UploadedFile() file) {
     return file;
   }
+  
 }
