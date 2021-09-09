@@ -19,6 +19,7 @@ export class AuthGuard implements CanActivate {
 
 async function validateRequest(request: Request, userModel: Model<Admin>) {
   const { username, password } = request.body;
+  console.log(request.body);
   const admin = await userModel.findOne({ admin_name: username }).select("+admin_pwd");
   if (!admin) throw _tcrs(REULTCODES.USER_NOT_EXIST, "用户不存在"); // 用户不存在
   if (!admin.admin_status) throw _tcrs(REULTCODES.USER_ACCOUNT_FORBIDDEN, "账户被禁用"); // 用户被禁用

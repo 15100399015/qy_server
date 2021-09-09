@@ -7,10 +7,9 @@ import { ADMINRULES } from "@admin/constant";
 @Controller("upload")
 export class UploadController {
   @Post("/")
-  // @Roles(ADMINRULES.__ALL_ADMIN)
+  @Roles(ADMINRULES.__ALL_ADMIN)
   @UseInterceptors(FileInterceptor("file"))
   upload(@UploadedFile() file) {
     return file;
   }
-  
 }

@@ -29,13 +29,13 @@ export class AuthGuard implements CanActivate {
     if (!roles) return true; // 没有拿到说明没有权限保护,则直接允许
     // 切换上下文到请求对象
     const request = context.switchToHttp().getRequest();
-    if (!request.headers.token) throw _tcrs(REULTCODES.TOKEN_IS_NULL, "token not found"); // 如果没有发送token直接拒绝
+    if (!request.cookies["token"]) throw _tcrs(REULTCODES.TOKEN_IS_NULL, "token not found"); // 如果没有发送token直接拒绝
     // 解密token
     let token: TokenOption;
     try {
       // 尝试解密如果失败则直接抛出错误token错误
       // 解密数据
-      token = JSON.parse(decrypt(request.headers.token));
+      token = JSON.parse(decrypt(request.cookies["token"]));
       // 解密成功，验证结构
       const errors = await validate(plainToClass(AutoTokenDto, token), { whitelist: true });
       if (errors.length !== 0) throw new Error();
@@ -52,7 +52,7 @@ export class AuthGuard implements CanActivate {
     if (!admin) throw _tcrs(REULTCODES.USER_NOT_EXIST, "admin is non-existent");
     if (!admin.admin_token) throw _tcrs(REULTCODES.USER_NOT_LOGGED_IN, "admin not logged on"); // 没有登录
     if (!admin.admin_status) throw _tcrs(REULTCODES.USER_ACCOUNT_FORBIDDEN, "admin disabled"); // 账户停用
-    if (admin.admin_token !== request.headers.token) throw _tcrs(REULTCODES.TOKEN_IS_INVALID, "token mismatch"); // tokne与账户里的不匹配
+    if (admin.admin_token !== request.cookies["token"]) throw _tcrs(REULTCODES.TOKEN_IS_INVALID, "token mismatch"); // tokne与账户里的不匹配
     // 检查是否拥有权限
     if (roles[0] === ADMINRULES.__ALL_ADMIN || roles.some((role) => role === admin.admin_roles)) {
       // 至此token合法

@@ -1,12 +1,10 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { RootModel } from "./modules/model/model.module";
-import { ExtraModule } from "./modules/extra/extra.module";
 
 @Module({
   imports: [
     RootModel,
-    ExtraModule,
     MongooseModule.forRootAsync({
       useFactory: () => ({
         uri: `mongodb://${process.env.DATABASE}:${process.env.DATABASE_PORT}`,
@@ -21,6 +19,6 @@ import { ExtraModule } from "./modules/extra/extra.module";
       }),
     }),
   ],
-  exports: [RootModel, ExtraModule],
+  exports: [RootModel],
 })
 export class DataBaseModule {}

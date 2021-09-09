@@ -1,4 +1,5 @@
-import { Controller, Post, UseGuards, Req, Get } from "@nestjs/common";
+import { Controller, Post, UseGuards, Res, Get } from "@nestjs/common";
+import { Response } from "express";
 import { AuthService } from "./auth.service";
 import { generateToken } from "@util/generate-token";
 import { Roles } from "@admin/decorator/roles.decorator";
@@ -13,9 +14,10 @@ export class AuthController {
   // 登录
   @UseGuards(AuthGuard)
   @Post("login")
-  async login(@UserInfo("_id") _id: string) {
+  async login(@UserInfo("_id") _id: string, @Res({ passthrough: true }) res: Response) {
     const token = generateToken({ eff: 60 * 60, sub: _id });
     await this.authService.upToken(_id, token);
+    res.cookie("token", token);
     return { token };
   }
   // 获取当前用户信息
@@ -41,9 +43,10 @@ export class AuthController {
   // 续签token, 使用现有token生成新的token
   @Roles(ADMINRULES.__ALL_ADMIN)
   @Post("renewal")
-  async renewal(@UserInfo("_id") _id: string) {
+  async renewal(@UserInfo("_id") _id: string, @Res({ passthrough: true }) res: Response) {
     const token = generateToken({ eff: 60 * 60, sub: _id });
     await this.authService.upToken(_id, token);
+    res.cookie("token", token);
     return { token: token };
   }
 }

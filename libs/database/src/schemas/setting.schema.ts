@@ -8,6 +8,7 @@ export class Setting extends Document {
     type: SchemaTypes.String,
     index: true,
     required: true,
+    unique: true,
   })
   key: string;
   @Prop({
